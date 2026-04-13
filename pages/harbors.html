@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Harbor Ratings — Broadside</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',-apple-system,sans-serif;background-color:#060e1a;color:#eef2f6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+#topnav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:56px;background-color:rgba(6,14,26,0.93);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(58,181,209,0.12)}
+.logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-mark{width:30px;height:30px;border:1px solid rgba(58,181,209,0.3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background-color:rgba(58,181,209,0.08)}
+.logo-type{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fafcff;letter-spacing:-.02em;line-height:1}
+.logo-type b{color:#3ab5d1}
+.nav-right{display:flex;align-items:center;gap:10px}
+.gps-pill{display:flex;align-items:center;gap:5px;background-color:rgba(20,160,133,0.12);border:1px solid rgba(20,160,133,0.28);border-radius:100px;padding:5px 10px;font-size:.68rem;font-weight:600;color:#14a085}
+.gps-dot{width:5px;height:5px;border-radius:50%;background-color:#14a085;animation:gpsblink 1.8s ease-in-out infinite}
+@keyframes gpsblink{0%,100%{opacity:1}50%{opacity:.25}}
+#hambtn{width:34px;height:34px;background:transparent;border:1px solid rgba(58,181,209,0.18);border-radius:7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+#hambtn span{display:block;height:1px;background-color:#8fb3c8;border-radius:1px;transition:all .25s ease;transform-origin:center}
+#hambtn span:nth-child(1){width:14px}#hambtn span:nth-child(2){width:20px}#hambtn span:nth-child(3){width:14px}
+#hambtn.open span:nth-child(1){width:18px;transform:rotate(45deg) translate(3px,3px);background-color:#fafcff}
+#hambtn.open span:nth-child(2){opacity:0}
+#hambtn.open span:nth-child(3){width:18px;transform:rotate(-45deg) translate(3px,-3px);background-color:#fafcff}
+#overlay{position:fixed;inset:0;background-color:rgba(0,0,0,0.55);z-index:800;opacity:0;pointer-events:none;transition:opacity .28s ease}
+#overlay.open{opacity:1;pointer-events:all}
+#drawer{position:fixed;top:0;right:0;width:min(260px,80vw);height:100%;background-color:#08111e;border-left:1px solid rgba(58,181,209,0.12);z-index:850;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:64px 0 32px;overflow-y:auto}
+#drawer.open{transform:translateX(0)}
+.d-section-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5a7f99;padding:16px 22px 6px}
+.d-link{display:block;padding:11px 22px;font-size:.875rem;font-weight:500;color:#8fb3c8;text-decoration:none;transition:color .2s ease,background-color .2s ease;border-left:2px solid transparent}
+.d-link:hover,.d-link.active{color:#fafcff;background-color:rgba(58,181,209,0.06);border-left-color:#3ab5d1}
+.d-divider{height:1px;background-color:rgba(58,181,209,0.1);margin:12px 22px}
+.d-cta{margin:24px 22px 0;padding:13px;background:linear-gradient(135deg,#0d7377,#14a085);border:none;border-radius:9px;color:#fafcff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;width:calc(100% - 44px)}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .22s ease;border:none;padding:10px 20px;line-height:1}
+.btn-primary{background:linear-gradient(135deg,#0d7377,#14a085);color:#fafcff}
+.btn-ghost{background:transparent;color:#8fb3c8;border:1px solid rgba(58,181,209,0.2)}
+.btn-ghost:hover{border-color:#3ab5d1;color:#fafcff}
+.btn-sm{padding:7px 14px;font-size:.78rem;border-radius:6px}
+
+.page-header{padding:80px 20px 36px;position:relative;overflow:hidden}
+.page-header::before{content:'';position:absolute;top:-30%;left:-10%;width:70%;height:120%;border-radius:50%;background-color:#0d3557;opacity:.35;filter:blur(70px);pointer-events:none}
+.page-header-inner{position:relative;z-index:1;max-width:1100px;margin:0 auto}
+.breadcrumb{font-size:.72rem;color:#5a7f99;margin-bottom:14px}
+.breadcrumb a{color:#3ab5d1;text-decoration:none}
+.page-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;color:#fafcff;line-height:1.08;letter-spacing:-.03em;margin-bottom:10px}
+.page-title em{font-style:italic;color:#3ab5d1}
+.page-sub{font-size:.95rem;color:#8fb3c8;line-height:1.7;max-width:520px;font-weight:300;margin-bottom:20px}
+
+.sort-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.sort-row::-webkit-scrollbar{display:none}
+.ftag{flex-shrink:0;padding:6px 14px;border-radius:100px;font-size:.73rem;font-weight:600;border:1px solid rgba(58,181,209,0.18);background:transparent;color:#8fb3c8;cursor:pointer;transition:all .2s ease;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.ftag.on,.ftag:hover{background-color:rgba(58,181,209,0.1);border-color:#3ab5d1;color:#3ab5d1}
+
+.content{padding:32px 20px 60px;max-width:1100px;margin:0 auto}
+
+/* Featured top 3 */
+.top3{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:36px}
+@media(min-width:600px){.top3{grid-template-columns:repeat(3,1fr)}}
+
+.top-card{background:linear-gradient(160deg,#0d3557,#0d1f35);border:1px solid rgba(58,181,209,0.2);border-radius:14px;padding:22px 18px;text-align:center;position:relative;transition:all .22s ease}
+.top-card:hover{transform:translateY(-3px)}
+.top-card.gold-rank{border-color:rgba(200,169,110,0.4);background:linear-gradient(160deg,rgba(200,169,110,0.1),#0d1f35)}
+.rank-num{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:rgba(58,181,209,0.2);line-height:1;margin-bottom:6px}
+.top-card.gold-rank .rank-num{color:rgba(200,169,110,0.3)}
+.rank-award{font-size:1.4rem;margin-bottom:8px}
+.rank-name{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:#fafcff;margin-bottom:2px}
+.rank-state{font-size:.72rem;color:#5a7f99;margin-bottom:12px}
+.stars{display:flex;justify-content:center;gap:3px;margin-bottom:8px}
+.star{font-size:.9rem}
+.rank-score{font-family:'DM Mono',monospace;font-size:1.2rem;font-weight:600;color:#c8a96e;margin-bottom:4px}
+.rank-reviews{font-size:.7rem;color:#5a7f99}
+
+/* Harbor cards full list */
+.harbor-list{display:flex;flex-direction:column;gap:12px}
+
+.hcard-full{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.12);border-radius:13px;overflow:hidden;transition:all .22s ease;cursor:pointer}
+.hcard-full:hover{border-color:rgba(58,181,209,0.35);transform:translateY(-2px)}
+
+.hcard-full-inner{display:flex;gap:0}
+.hcard-rank-strip{width:48px;flex-shrink:0;background-color:rgba(10,22,40,0.5);display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(58,181,209,0.08)}
+.hcard-rank-num{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#5a7f99}
+
+.hcard-body{flex:1;padding:14px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hcard-main{flex:1;min-width:140px}
+.hcard-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#fafcff;margin-bottom:2px}
+.hcard-state{font-size:.7rem;color:#5a7f99;margin-bottom:8px}
+.hcard-tags{display:flex;gap:5px;flex-wrap:wrap}
+.htag{padding:2px 8px;border-radius:100px;font-size:.6rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background-color:rgba(58,181,209,0.1);color:#3ab5d1;border:1px solid rgba(58,181,209,0.2)}
+.htag.gold{background-color:rgba(200,169,110,0.12);color:#c8a96e;border-color:rgba(200,169,110,0.25)}
+
+.hcard-ratings{display:flex;flex-direction:column;gap:4px;min-width:120px}
+.hrat-row{display:flex;align-items:center;gap:6px}
+.hrat-label{font-size:.62rem;color:#5a7f99;width:60px;flex-shrink:0}
+.hrat-bar{flex:1;height:4px;background-color:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden}
+.hrat-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#3ab5d1,#14a085);transition:width .6s ease}
+.hrat-val{font-family:'DM Mono',monospace;font-size:.62rem;color:#8fb3c8;width:22px;text-align:right}
+
+.hcard-score-col{text-align:center;flex-shrink:0}
+.hcard-score{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#fafcff}
+.hcard-score-lbl{font-size:.6rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.07em}
+.hcard-reviews{font-size:.65rem;color:#3ab5d1;margin-top:2px}
+
+.hcard-note{padding:0 16px 14px;font-size:.76rem;color:#8fb3c8;line-height:1.6;font-style:italic;border-top:1px solid rgba(58,181,209,0.07);padding-top:12px}
+
+footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);padding:28px 20px}
+.footer-bot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.footer-copy{font-size:.7rem;color:#5a7f99}
+.footer-copy b{color:#c8a96e}
+.footer-legal{display:flex;gap:14px}
+.footer-legal a{font-size:.68rem;color:#5a7f99;text-decoration:none}
+.footer-legal a:hover{color:#fafcff}
+</style>
+</head>
+<body>
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer" aria-hidden="true">
+  <div class="d-section-label">Navigate</div>
+  <a href="../broadside.html#explore" class="d-link">Explore Feed</a>
+  <a href="../broadside.html#register" class="d-link">Register Vessel</a>
+  <a href="marketplace.html" class="d-link">Marketplace</a>
+  <a href="chandlery.html" class="d-link">Chandlery</a>
+  <a href="../broadside.html#pricing" class="d-link">Pricing</a>
+  <div class="d-divider"></div>
+  <a href="../pages/coverage.html" class="d-link">Coverage Map</a>
+  <a href="advertise.html" class="d-link">Advertise</a>
+  <a href="about.html" class="d-link">About Broadside</a>
+  <button class="d-cta" onclick="window.location='../broadside.html#register'">Register Your Vessel — $5/mo</button>
+</div>
+<nav id="topnav">
+  <a href="../broadside.html" class="logo-wrap"><div class="logo-mark">⛵</div><span class="logo-type"><b>Broad</b>side</span></a>
+  <div class="nav-right">
+    <span class="gps-pill"><span class="gps-dot"></span>GPS Live</span>
+    <button id="hambtn" onclick="toggleDrawer()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="breadcrumb"><a href="../broadside.html">Broadside</a> / Harbor Ratings</div>
+    <div class="page-title">Harbor <em>Ratings</em></div>
+    <p class="page-sub">Mariner-submitted ratings for every harbor on Broadside. Scored on anchorage, facilities, dining, fuel, safety and character. All ratings come from verified vessel owners.</p>
+    <div class="sort-row">
+      <button class="ftag on">Top Rated</button>
+      <button class="ftag">Best Anchorage</button>
+      <button class="ftag">Best Facilities</button>
+      <button class="ftag">Best Dining</button>
+      <button class="ftag">NY Only</button>
+      <button class="ftag">CT Only</button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- TOP 3 -->
+  <div class="top3" id="top3"></div>
+
+  <!-- FULL LIST -->
+  <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#fafcff;margin-bottom:16px;">All Rated Harbors</div>
+  <div class="harbor-list" id="harborList"></div>
+
+</div>
+
+<footer>
+  <div class="footer-bot">
+    <div class="footer-copy">© 2025 <b>Broadside</b></div>
+    <div class="footer-legal"><a href="about.html">About</a><a href="../broadside.html">Home</a></div>
+  </div>
+</footer>
+
+<script>
+const harbors = [
+  {name:"Mystic",state:"CT",score:4.9,reviews:312,anchor:4.9,facilities:4.8,dining:5.0,fuel:4.7,safety:4.9,character:5.0,tags:["Best Dining","Historic","Must Visit"],note:"Mystic is the crown jewel of the CT coast. The drawbridge anchorage is unforgettable, the Seaport museum is walking distance, and Abbott's Lobster is non-negotiable."},
+  {name:"Sag Harbor",state:"NY",score:4.8,reviews:287,anchor:4.7,facilities:4.9,dining:4.9,fuel:4.8,safety:4.8,character:4.8,tags:["Classic","Great Dining","Boutique"],note:"Sag Harbor Village Dock is well-managed and central. The town itself is one of the finest on the East Coast. Peak season gets very busy — arrive early or anchor off."},
+  {name:"Newport",state:"RI",score:4.8,reviews:445,anchor:4.6,facilities:5.0,dining:4.9,fuel:5.0,safety:4.8,character:4.9,tags:["Bucket List","Great Facilities","Sailing Capital"],note:"Newport is world-class in every category. Christie's Landing and Bannister's Wharf are busy but beautiful. The harbor can be rolly in southerlies — use Goat Island for more protection."},
+  {name:"Oyster Bay",state:"NY",score:4.7,reviews:198,anchor:4.8,facilities:4.6,dining:4.7,fuel:4.6,safety:4.9,character:4.7,tags:["Protected","Local Favorite","Active RC"],note:"One of the most sheltered anchorages on Long Island Sound. The Oyster Bay YC is welcoming and the town a short dinghy ride. Perfect base for Sound racing."},
+  {name:"Essex",state:"CT",score:4.7,reviews:176,anchor:4.9,facilities:4.5,dining:4.7,fuel:4.4,safety:4.8,character:4.9,tags:["CT River","Charming","Peaceful"],note:"Essex has a quiet, unhurried quality that the busy outer-Sound harbors can't match. The Connecticut River approach is beautiful and the town genuinely lovely."},
+  {name:"Block Island",state:"RI",score:4.6,reviews:334,anchor:4.5,facilities:4.4,dining:4.6,fuel:4.3,safety:4.4,character:4.9,tags:["Offshore","Dramatic","Worth the Sail"],note:"Great Salt Pond is one of the great anchorages of the Northeast. Plan for a crowd in July–August — get in before noon. The bike ride around the island is a must."},
+  {name:"Greenport",state:"NY",score:4.5,reviews:178,anchor:4.5,facilities:4.6,dining:4.5,fuel:4.7,safety:4.6,character:4.5,tags:["North Fork","Ferry Town","Waterfront Dining"],note:"Greenport has reinvented itself with excellent restaurants and a vibrant waterfront. Mitchell Park marina is well-run. The carousel and maritime museum are worth a visit."},
+  {name:"Stonington",state:"CT",score:4.5,reviews:134,anchor:4.6,facilities:4.3,dining:4.5,fuel:4.2,safety:4.7,character:4.8,tags:["Quaint","Protected","Authentic"],note:"Stonington Borough is one of the most authentic sailing villages remaining on the Sound. Small, quiet, and genuinely beautiful. Limited fuel — call ahead."},
+  {name:"Northport",state:"NY",score:4.4,reviews:112,anchor:4.5,facilities:4.3,dining:4.4,fuel:4.5,safety:4.6,character:4.4,tags:["Protected","Local","Calm"],note:"Northport Bay offers excellent protection in almost any conditions. The town dock is convenient and the village has good provisioning options."},
+  {name:"Cold Spring Harbor",state:"NY",score:4.3,reviews:89,anchor:4.4,facilities:4.1,dining:4.2,fuel:4.0,safety:4.5,character:4.4,tags:["Peaceful","Protected","Quiet"],note:"Cold Spring Harbor is primarily a mooring field but offers excellent protection. The village is uphill but worth the walk for provisioning and dinner."},
+  {name:"Westport",state:"CT",score:4.3,reviews:96,anchor:4.2,facilities:4.4,dining:4.3,fuel:4.3,safety:4.4,character:4.2,tags:["Saugatuck River","Easy Access","Good Fuel"],note:"The Saugatuck River approach is straightforward in settled weather. Good dockage options and convenient to provisioning. Can be tricky in northeast breeze."},
+  {name:"Mamaroneck",state:"NY",score:4.2,reviews:134,anchor:4.1,facilities:4.4,dining:4.2,fuel:4.5,safety:4.3,character:4.1,tags:["Western Sound","Good Fuel","Active Yacht Club"],note:"Mamaroneck Harbor is one of the busiest in the western Sound. Excellent facilities and fuel at the municipal marina. Town provisioning is top-notch."},
+];
+
+// Top 3
+const t3 = document.getElementById('top3');
+harbors.slice(0,3).forEach((h,i)=>{
+  const awards=['🥇','🥈','🥉'];
+  const d=document.createElement('div');
+  d.className='top-card'+(i===0?' gold-rank':'');
+  d.innerHTML=`
+    <div class="rank-num">0${i+1}</div>
+    <div class="rank-award">${awards[i]}</div>
+    <div class="rank-name">${h.name}</div>
+    <div class="rank-state">${h.state} · ${h.reviews} reviews</div>
+    <div class="stars">${'★'.repeat(Math.floor(h.score))}${h.score%1>0.4?'½':''}</div>
+    <div class="rank-score">${h.score.toFixed(1)}</div>
+    <div class="rank-reviews">${h.tags.slice(0,2).join(' · ')}</div>`;
+  t3.appendChild(d);
+});
+
+// Full list
+const hl = document.getElementById('harborList');
+harbors.forEach((h,i)=>{
+  const d=document.createElement('div');
+  d.className='hcard-full';
+  const cats=['anchor','facilities','dining','fuel','safety','character'];
+  const labels=['Anchor','Facilit.','Dining','Fuel','Safety','Character'];
+  d.innerHTML=`
+    <div class="hcard-full-inner">
+      <div class="hcard-rank-strip"><div class="hcard-rank-num">${i+1}</div></div>
+      <div class="hcard-body">
+        <div class="hcard-main">
+          <div class="hcard-name">${h.name}, ${h.state}</div>
+          <div class="hcard-state">${h.reviews} mariner reviews</div>
+          <div class="hcard-tags">${h.tags.map(t=>`<span class="htag">${t}</span>`).join('')}</div>
+        </div>
+        <div class="hcard-ratings">
+          ${cats.map((c,ci)=>`
+            <div class="hrat-row">
+              <span class="hrat-label">${labels[ci]}</span>
+              <div class="hrat-bar"><div class="hrat-fill" style="width:${(h[c]/5)*100}%"></div></div>
+              <span class="hrat-val">${h[c].toFixed(1)}</span>
+            </div>`).join('')}
+        </div>
+        <div class="hcard-score-col">
+          <div class="hcard-score">${h.score.toFixed(1)}</div>
+          <div class="hcard-score-lbl">Overall</div>
+          <div class="hcard-reviews">${h.reviews} reviews</div>
+        </div>
+      </div>
+    </div>
+    <div class="hcard-note">"${h.note}"</div>`;
+  hl.appendChild(d);
+});
+
+function toggleDrawer(){const d=document.getElementById('drawer'),o=document.getElementById('overlay'),h=document.getElementById('hambtn');const open=d.classList.toggle('open');o.classList.toggle('open',open);h.classList.toggle('open',open);document.body.style.overflow=open?'hidden':'';}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');document.getElementById('hambtn').classList.remove('open');document.body.style.overflow='';}
+</script>
+</body>
+</html>

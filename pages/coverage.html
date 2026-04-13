@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Coverage Map — Broadside</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',-apple-system,sans-serif;background-color:#060e1a;color:#eef2f6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+#topnav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:56px;background-color:rgba(6,14,26,0.93);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(58,181,209,0.12)}
+.logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-mark{width:30px;height:30px;border:1px solid rgba(58,181,209,0.3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background-color:rgba(58,181,209,0.08)}
+.logo-type{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fafcff;letter-spacing:-.02em;line-height:1}
+.logo-type b{color:#3ab5d1}
+.nav-right{display:flex;align-items:center;gap:10px}
+.gps-pill{display:flex;align-items:center;gap:5px;background-color:rgba(20,160,133,0.12);border:1px solid rgba(20,160,133,0.28);border-radius:100px;padding:5px 10px;font-size:.68rem;font-weight:600;color:#14a085}
+.gps-dot{width:5px;height:5px;border-radius:50%;background-color:#14a085;animation:gpsblink 1.8s ease-in-out infinite}
+@keyframes gpsblink{0%,100%{opacity:1}50%{opacity:.25}}
+#hambtn{width:34px;height:34px;background:transparent;border:1px solid rgba(58,181,209,0.18);border-radius:7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+#hambtn span{display:block;height:1px;background-color:#8fb3c8;border-radius:1px;transition:all .25s ease;transform-origin:center}
+#hambtn span:nth-child(1){width:14px}#hambtn span:nth-child(2){width:20px}#hambtn span:nth-child(3){width:14px}
+#hambtn.open span:nth-child(1){width:18px;transform:rotate(45deg) translate(3px,3px);background-color:#fafcff}
+#hambtn.open span:nth-child(2){opacity:0}
+#hambtn.open span:nth-child(3){width:18px;transform:rotate(-45deg) translate(3px,-3px);background-color:#fafcff}
+#overlay{position:fixed;inset:0;background-color:rgba(0,0,0,0.55);z-index:800;opacity:0;pointer-events:none;transition:opacity .28s ease}
+#overlay.open{opacity:1;pointer-events:all}
+#drawer{position:fixed;top:0;right:0;width:min(260px,80vw);height:100%;background-color:#08111e;border-left:1px solid rgba(58,181,209,0.12);z-index:850;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:64px 0 32px;overflow-y:auto}
+#drawer.open{transform:translateX(0)}
+.d-section-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5a7f99;padding:16px 22px 6px}
+.d-link{display:block;padding:11px 22px;font-size:.875rem;font-weight:500;color:#8fb3c8;text-decoration:none;transition:color .2s ease,background-color .2s ease;border-left:2px solid transparent}
+.d-link:hover,.d-link.active{color:#fafcff;background-color:rgba(58,181,209,0.06);border-left-color:#3ab5d1}
+.d-divider{height:1px;background-color:rgba(58,181,209,0.1);margin:12px 22px}
+.d-cta{margin:24px 22px 0;padding:13px;background:linear-gradient(135deg,#0d7377,#14a085);border:none;border-radius:9px;color:#fafcff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;width:calc(100% - 44px)}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .22s ease;border:none;padding:10px 20px;line-height:1}
+.btn-primary{background:linear-gradient(135deg,#0d7377,#14a085);color:#fafcff}
+.btn-ghost{background:transparent;color:#8fb3c8;border:1px solid rgba(58,181,209,0.2)}
+.btn-ghost:hover{border-color:#3ab5d1;color:#fafcff}
+.btn-sm{padding:7px 14px;font-size:.78rem;border-radius:6px}
+
+.page-header{padding:80px 20px 32px;position:relative;overflow:hidden}
+.page-header::before{content:'';position:absolute;top:-30%;left:-10%;width:70%;height:120%;border-radius:50%;background-color:#0d3557;opacity:.35;filter:blur(70px);pointer-events:none}
+.page-header-inner{position:relative;z-index:1;max-width:700px;margin:0 auto}
+.breadcrumb{font-size:.72rem;color:#5a7f99;margin-bottom:14px}
+.breadcrumb a{color:#3ab5d1;text-decoration:none}
+.page-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;color:#fafcff;line-height:1.08;letter-spacing:-.03em;margin-bottom:10px}
+.page-title em{font-style:italic;color:#3ab5d1}
+.page-sub{font-size:.95rem;color:#8fb3c8;line-height:1.7;max-width:500px;font-weight:300}
+
+#covermap{width:100%;height:calc(100svh - 56px);margin-top:56px}
+.leaflet-container{background:#060e1a}
+
+.map-legend{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:500;background-color:rgba(8,15,29,0.9);border:1px solid rgba(58,181,209,0.2);border-radius:12px;padding:14px 18px;display:flex;gap:16px;flex-wrap:wrap;justify-content:center;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.leg-item{display:flex;align-items:center;gap:7px;font-size:.72rem;color:#8fb3c8;font-weight:600;white-space:nowrap}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+.harbor-popup .leaflet-popup-content-wrapper{background-color:#0b1929;border:1px solid rgba(58,181,209,0.25);color:#eef2f6;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.5)}
+.harbor-popup .leaflet-popup-tip{background-color:#0b1929}
+.hp-name{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fafcff;margin-bottom:4px}
+.hp-vessels{font-size:.72rem;color:#3ab5d1;margin-bottom:2px}
+.hp-state{font-size:.7rem;color:#5a7f99}
+
+.stats-bar{background-color:#080f1d;border-bottom:1px solid rgba(58,181,209,0.1);padding:12px 20px;display:flex;gap:20px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:relative;z-index:10}
+.stats-bar::-webkit-scrollbar{display:none}
+.sbar-item{flex-shrink:0;text-align:center}
+.sbar-num{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:#fafcff;line-height:1}
+.sbar-num b{color:#3ab5d1}
+.sbar-lbl{font-size:.6rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+
+.harbor-list-section{padding:32px 20px 48px;max-width:1100px;margin:0 auto}
+.harbor-grid{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:500px){.harbor-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:800px){.harbor-grid{grid-template-columns:repeat(3,1fr)}}
+.hcard{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.12);border-radius:11px;padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .22s ease;text-decoration:none}
+.hcard:hover{border-color:rgba(58,181,209,0.35);transform:translateY(-2px)}
+.hcard-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.hcard-info{}
+.hcard-name{font-weight:700;font-size:.9rem;color:#fafcff;margin-bottom:2px}
+.hcard-vessels{font-size:.72rem;color:#3ab5d1}
+.hcard-state{font-size:.68rem;color:#5a7f99}
+.hcard-arrow{margin-left:auto;color:#3ab5d1;font-size:.9rem}
+
+footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);padding:28px 20px}
+.footer-bot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.footer-copy{font-size:.7rem;color:#5a7f99}
+.footer-copy b{color:#c8a96e}
+.footer-legal{display:flex;gap:14px}
+.footer-legal a{font-size:.68rem;color:#5a7f99;text-decoration:none}
+.footer-legal a:hover{color:#fafcff}
+</style>
+</head>
+<body>
+
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer" aria-hidden="true">
+  <div class="d-section-label">Navigate</div>
+  <a href="broadside.html#explore" class="d-link">Explore Feed</a>
+  <a href="broadside.html#register" class="d-link">Register Vessel</a>
+  <a href="pages/marketplace.html" class="d-link">Marketplace</a>
+  <a href="pages/chandlery.html" class="d-link">Chandlery</a>
+  <a href="broadside.html#pricing" class="d-link">Pricing</a>
+  <div class="d-divider"></div>
+  <div class="d-section-label">More</div>
+  <a href="pages/coverage.html" class="d-link active">Coverage Map</a>
+  <a href="pages/advertise.html" class="d-link">Advertise</a>
+  <a href="pages/about.html" class="d-link">About Broadside</a>
+  <button class="d-cta" onclick="window.location='broadside.html#register'">Register Your Vessel — $5/mo</button>
+</div>
+
+<nav id="topnav">
+  <a href="broadside.html" class="logo-wrap">
+    <div class="logo-mark">⛵</div>
+    <span class="logo-type"><b>Broad</b>side</span>
+  </a>
+  <div class="nav-right">
+    <span class="gps-pill"><span class="gps-dot"></span>GPS Live</span>
+    <button id="hambtn" onclick="toggleDrawer()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- STATS BAR -->
+<div class="stats-bar" style="margin-top:56px;">
+  <div class="sbar-item"><div class="sbar-num">4,<b>217</b></div><div class="sbar-lbl">Vessels Registered</div></div>
+  <div class="sbar-item"><div class="sbar-num" style="color:#14a085;">31</div><div class="sbar-lbl">Active Harbors</div></div>
+  <div class="sbar-item"><div class="sbar-num">92,<b>840</b></div><div class="sbar-lbl">Photos Matched</div></div>
+  <div class="sbar-item"><div class="sbar-num" style="color:#c8a96e;">LI <b>Sound</b></div><div class="sbar-lbl">Primary Region</div></div>
+  <div class="sbar-item"><div class="sbar-num">284</div><div class="sbar-lbl">Active This Week</div></div>
+</div>
+
+<!-- MAP -->
+<div style="position:relative;">
+  <div id="covermap"></div>
+  <div class="map-legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#3ab5d1;"></div>Active Harbor</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#c8a96e;"></div>High Activity</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#14a085;"></div>Growing</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#5a7f99;"></div>Coming Soon</div>
+  </div>
+</div>
+
+<!-- HARBOR LIST -->
+<div class="harbor-list-section">
+  <div class="sec-lbl" style="font-size:.67rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#3ab5d1;margin-bottom:8px;">Active Coverage Zones</div>
+  <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#fafcff;margin-bottom:20px;">Long Island Sound & <em style="font-style:italic;color:#3ab5d1;">Connecticut Shore</em></div>
+  <div class="harbor-grid" id="harborGrid"></div>
+</div>
+
+<footer>
+  <div class="footer-bot">
+    <div class="footer-copy">© 2025 <b>Broadside</b> · Long Island Sound & Beyond</div>
+    <div class="footer-legal">
+      <a href="pages/about.html">About</a>
+      <a href="pages/privacy.html">Privacy</a>
+      <a href="broadside.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const harbors = [
+  {name:"Oyster Bay",state:"NY",vessels:312,lat:40.875,lng:-73.527,tier:"high"},
+  {name:"Sag Harbor",state:"NY",vessels:287,lat:40.999,lng:-72.298,tier:"high"},
+  {name:"Greenport",state:"NY",vessels:198,lat:41.101,lng:-72.362,tier:"active"},
+  {name:"Port Washington",state:"NY",vessels:241,lat:40.836,lng:-73.698,tier:"active"},
+  {name:"Northport",state:"NY",vessels:176,lat:40.906,lng:-73.342,tier:"active"},
+  {name:"Cold Spring Harbor",state:"NY",vessels:143,lat:40.861,lng:-73.445,tier:"active"},
+  {name:"Glen Cove",state:"NY",vessels:167,lat:40.862,lng:-73.627,tier:"active"},
+  {name:"Mamaroneck",state:"NY",vessels:204,lat:40.921,lng:-73.737,tier:"high"},
+  {name:"Montauk",state:"NY",vessels:289,lat:41.039,lng:-71.954,tier:"high"},
+  {name:"City Island",state:"NY",vessels:156,lat:40.851,lng:-73.787,tier:"active"},
+  {name:"Huntington",state:"NY",vessels:188,lat:40.873,lng:-73.427,tier:"active"},
+  {name:"Mystic",state:"CT",vessels:321,lat:41.354,lng:-71.965,tier:"high"},
+  {name:"Stonington",state:"CT",vessels:267,lat:41.336,lng:-71.907,tier:"high"},
+  {name:"Westport",state:"CT",vessels:198,lat:41.141,lng:-73.358,tier:"active"},
+  {name:"Essex",state:"CT",vessels:176,lat:41.351,lng:-72.390,tier:"growing"},
+  {name:"Noank",state:"CT",vessels:134,lat:41.328,lng:-72.001,tier:"growing"},
+  {name:"New Haven",state:"CT",vessels:145,lat:41.308,lng:-72.928,tier:"active"},
+  {name:"Norwalk",state:"CT",vessels:212,lat:41.118,lng:-73.408,tier:"active"},
+  {name:"Stamford",state:"CT",vessels:189,lat:41.053,lng:-73.538,tier:"active"},
+  {name:"Greenwich",state:"CT",vessels:167,lat:41.026,lng:-73.628,tier:"growing"},
+  {name:"Old Saybrook",state:"CT",vessels:143,lat:41.293,lng:-72.377,tier:"growing"},
+  {name:"Block Island",state:"RI",vessels:89,lat:41.167,lng:-71.557,tier:"growing"},
+  {name:"Newport",state:"RI",vessels:267,lat:41.490,lng:-71.313,tier:"high"},
+  {name:"Bristol",state:"RI",vessels:112,lat:41.677,lng:-71.270,tier:"growing"},
+  {name:"Watch Hill",state:"RI",vessels:76,lat:41.306,lng:-71.857,tier:"soon"},
+  {name:"New London",state:"CT",vessels:134,lat:41.356,lng:-72.100,tier:"active"},
+  {name:"Branford",state:"CT",vessels:98,lat:41.279,lng:-72.813,tier:"growing"},
+  {name:"Guilford",state:"CT",vessels:87,lat:41.289,lng:-72.681,tier:"soon"},
+  {name:"Madison",state:"CT",vessels:76,lat:41.279,lng:-72.598,tier:"soon"},
+  {name:"Clinton",state:"CT",vessels:67,lat:41.278,lng:-72.528,tier:"soon"},
+  {name:"Larchmont",state:"NY",vessels:145,lat:40.928,lng:-73.751,tier:"active"},
+];
+
+const tierColors = {
+  high:'#c8a96e', active:'#3ab5d1', growing:'#14a085', soon:'#5a7f99'
+};
+
+// Init map
+const map = L.map('covermap',{
+  center:[41.1,-72.4], zoom:9,
+  zoomControl:true,
+  attributionControl:false
+});
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  maxZoom:16
+}).addTo(map);
+
+// Dark overlay
+map.getContainer().style.filter = 'brightness(0.7) saturate(0.6) hue-rotate(190deg)';
+
+harbors.forEach(h=>{
+  const icon = L.divIcon({
+    html:`<div style="width:${h.tier==='high'?14:10}px;height:${h.tier==='high'?14:10}px;border-radius:50%;background:${tierColors[h.tier]};border:2px solid rgba(255,255,255,0.3);box-shadow:0 0 ${h.tier==='high'?'12px':'7px'} ${tierColors[h.tier]}88;"></div>`,
+    className:'', iconAnchor:[7,7]
+  });
+
+  const marker = L.marker([h.lat,h.lng],{icon}).addTo(map);
+  marker.bindPopup(`
+    <div style="font-family:-apple-system,sans-serif;min-width:130px;">
+      <div style="font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:#fafcff;margin-bottom:4px;">${h.name}, ${h.state}</div>
+      <div style="font-size:.72rem;color:#3ab5d1;margin-bottom:2px;">${h.vessels} vessels registered</div>
+      <div style="font-size:.68rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.06em;">${h.tier==='soon'?'Coming Soon':h.tier==='growing'?'Growing':'Active'}</div>
+    </div>`,
+    {className:'harbor-popup'}
+  );
+});
+
+// Harbor grid
+const grid = document.getElementById('harborGrid');
+harbors.forEach(h=>{
+  const a = document.createElement('a');
+  a.href = '#';
+  a.className = 'hcard';
+  a.onclick = (e)=>{ e.preventDefault(); map.setView([h.lat,h.lng],12); window.scrollTo({top:56,behavior:'smooth'}); };
+  a.innerHTML = `
+    <div class="hcard-dot" style="background:${tierColors[h.tier]};box-shadow:0 0 8px ${tierColors[h.tier]}88;"></div>
+    <div class="hcard-info">
+      <div class="hcard-name">${h.name}, ${h.state}</div>
+      <div class="hcard-vessels">${h.vessels} vessels</div>
+      <div class="hcard-state">${h.tier==='soon'?'Coming Soon':h.tier==='growing'?'Growing Community':'Active Coverage'}</div>
+    </div>
+    <div class="hcard-arrow">→</div>`;
+  grid.appendChild(a);
+});
+
+function toggleDrawer(){
+  const d=document.getElementById('drawer'),o=document.getElementById('overlay'),h=document.getElementById('hambtn');
+  const open=d.classList.toggle('open');
+  o.classList.toggle('open',open);h.classList.toggle('open',open);
+  document.body.style.overflow=open?'hidden':'';
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('hambtn').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+</script>
+</body>
+</html>

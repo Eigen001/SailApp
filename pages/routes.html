@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Popular Routes — Broadside</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',-apple-system,sans-serif;background-color:#060e1a;color:#eef2f6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+#topnav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:56px;background-color:rgba(6,14,26,0.93);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(58,181,209,0.12)}
+.logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-mark{width:30px;height:30px;border:1px solid rgba(58,181,209,0.3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background-color:rgba(58,181,209,0.08)}
+.logo-type{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fafcff;letter-spacing:-.02em;line-height:1}
+.logo-type b{color:#3ab5d1}
+.nav-right{display:flex;align-items:center;gap:10px}
+.gps-pill{display:flex;align-items:center;gap:5px;background-color:rgba(20,160,133,0.12);border:1px solid rgba(20,160,133,0.28);border-radius:100px;padding:5px 10px;font-size:.68rem;font-weight:600;color:#14a085}
+.gps-dot{width:5px;height:5px;border-radius:50%;background-color:#14a085;animation:gpsblink 1.8s ease-in-out infinite}
+@keyframes gpsblink{0%,100%{opacity:1}50%{opacity:.25}}
+#hambtn{width:34px;height:34px;background:transparent;border:1px solid rgba(58,181,209,0.18);border-radius:7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+#hambtn span{display:block;height:1px;background-color:#8fb3c8;border-radius:1px;transition:all .25s ease;transform-origin:center}
+#hambtn span:nth-child(1){width:14px}#hambtn span:nth-child(2){width:20px}#hambtn span:nth-child(3){width:14px}
+#hambtn.open span:nth-child(1){width:18px;transform:rotate(45deg) translate(3px,3px);background-color:#fafcff}
+#hambtn.open span:nth-child(2){opacity:0}
+#hambtn.open span:nth-child(3){width:18px;transform:rotate(-45deg) translate(3px,-3px);background-color:#fafcff}
+#overlay{position:fixed;inset:0;background-color:rgba(0,0,0,0.55);z-index:800;opacity:0;pointer-events:none;transition:opacity .28s ease}
+#overlay.open{opacity:1;pointer-events:all}
+#drawer{position:fixed;top:0;right:0;width:min(260px,80vw);height:100%;background-color:#08111e;border-left:1px solid rgba(58,181,209,0.12);z-index:850;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:64px 0 32px;overflow-y:auto}
+#drawer.open{transform:translateX(0)}
+.d-section-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5a7f99;padding:16px 22px 6px}
+.d-link{display:block;padding:11px 22px;font-size:.875rem;font-weight:500;color:#8fb3c8;text-decoration:none;transition:color .2s ease,background-color .2s ease;border-left:2px solid transparent}
+.d-link:hover,.d-link.active{color:#fafcff;background-color:rgba(58,181,209,0.06);border-left-color:#3ab5d1}
+.d-divider{height:1px;background-color:rgba(58,181,209,0.1);margin:12px 22px}
+.d-cta{margin:24px 22px 0;padding:13px;background:linear-gradient(135deg,#0d7377,#14a085);border:none;border-radius:9px;color:#fafcff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;width:calc(100% - 44px)}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .22s ease;border:none;padding:10px 20px;line-height:1}
+.btn-primary{background:linear-gradient(135deg,#0d7377,#14a085);color:#fafcff}
+.btn-ghost{background:transparent;color:#8fb3c8;border:1px solid rgba(58,181,209,0.2)}
+.btn-ghost:hover{border-color:#3ab5d1;color:#fafcff}
+.btn-sm{padding:7px 14px;font-size:.78rem;border-radius:6px}
+
+.page-header{padding:80px 20px 36px;position:relative;overflow:hidden}
+.page-header::before{content:'';position:absolute;top:-30%;left:-10%;width:70%;height:120%;border-radius:50%;background-color:#0d3557;opacity:.35;filter:blur(70px);pointer-events:none}
+.page-header-inner{position:relative;z-index:1;max-width:1100px;margin:0 auto}
+.breadcrumb{font-size:.72rem;color:#5a7f99;margin-bottom:14px}
+.breadcrumb a{color:#3ab5d1;text-decoration:none}
+.page-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;color:#fafcff;line-height:1.08;letter-spacing:-.03em;margin-bottom:10px}
+.page-title em{font-style:italic;color:#3ab5d1}
+.page-sub{font-size:.95rem;color:#8fb3c8;line-height:1.7;max-width:520px;font-weight:300;margin-bottom:24px}
+
+.filter-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.ftag{flex-shrink:0;padding:6px 14px;border-radius:100px;font-size:.73rem;font-weight:600;border:1px solid rgba(58,181,209,0.18);background:transparent;color:#8fb3c8;cursor:pointer;transition:all .2s ease;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.ftag.on,.ftag:hover{background-color:rgba(58,181,209,0.1);border-color:#3ab5d1;color:#3ab5d1}
+
+.routes-section{padding:32px 20px 60px;max-width:1100px;margin:0 auto}
+.route-grid{display:grid;grid-template-columns:1fr;gap:20px}
+@media(min-width:700px){.route-grid{grid-template-columns:repeat(2,1fr)}}
+
+.rcard{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.12);border-radius:14px;overflow:hidden;transition:all .22s ease}
+.rcard:hover{border-color:rgba(58,181,209,0.35);transform:translateY(-2px)}
+
+.rcard-map{height:180px;position:relative}
+.rcard-map-el{width:100%;height:100%}
+
+.rcard-body{padding:16px}
+.rcard-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#fafcff;margin-bottom:4px;line-height:1.2}
+.rcard-route{font-size:.75rem;color:#8fb3c8;margin-bottom:10px}
+.rcard-route b{color:#3ab5d1}
+
+.rcard-stats{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.rst{display:flex;flex-direction:column;gap:2px}
+.rst-val{font-family:'DM Mono',monospace;font-size:.82rem;color:#c8a96e;font-weight:600}
+.rst-lbl{font-size:.62rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.07em}
+
+.rcard-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+.rtag{padding:3px 9px;border-radius:100px;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background-color:rgba(58,181,209,0.1);color:#3ab5d1;border:1px solid rgba(58,181,209,0.2)}
+.rtag.gold{background-color:rgba(200,169,110,0.12);color:#c8a96e;border-color:rgba(200,169,110,0.25)}
+.rtag.green{background-color:rgba(20,160,133,0.1);color:#14a085;border-color:rgba(20,160,133,0.25)}
+
+.rcard-note{font-size:.78rem;color:#8fb3c8;line-height:1.6;font-style:italic;border-top:1px solid rgba(58,181,209,0.08);padding-top:12px;margin-top:4px}
+
+.rcard-footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid rgba(58,181,209,0.08)}
+.vessel-ref{display:flex;align-items:center;gap:8px}
+.vessel-avatar{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid rgba(58,181,209,0.3)}
+.vessel-name-sm{font-size:.72rem;color:#8fb3c8;font-weight:600}
+.vessel-class-sm{font-size:.65rem;color:#5a7f99}
+.rcard-likes{font-size:.72rem;color:#d08080;font-family:'DM Mono',monospace}
+
+footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);padding:28px 20px}
+.footer-bot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.footer-copy{font-size:.7rem;color:#5a7f99}
+.footer-copy b{color:#c8a96e}
+.footer-legal{display:flex;gap:14px}
+.footer-legal a{font-size:.68rem;color:#5a7f99;text-decoration:none}
+.footer-legal a:hover{color:#fafcff}
+</style>
+</head>
+<body>
+
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer" aria-hidden="true">
+  <div class="d-section-label">Navigate</div>
+  <a href="../broadside.html#explore" class="d-link">Explore Feed</a>
+  <a href="../broadside.html#register" class="d-link">Register Vessel</a>
+  <a href="marketplace.html" class="d-link">Marketplace</a>
+  <a href="chandlery.html" class="d-link">Chandlery</a>
+  <a href="../broadside.html#pricing" class="d-link">Pricing</a>
+  <div class="d-divider"></div>
+  <a href="../pages/coverage.html" class="d-link">Coverage Map</a>
+  <a href="advertise.html" class="d-link">Advertise</a>
+  <a href="about.html" class="d-link">About Broadside</a>
+  <button class="d-cta" onclick="window.location='../broadside.html#register'">Register Your Vessel — $5/mo</button>
+</div>
+
+<nav id="topnav">
+  <a href="../broadside.html" class="logo-wrap">
+    <div class="logo-mark">⛵</div>
+    <span class="logo-type"><b>Broad</b>side</span>
+  </a>
+  <div class="nav-right">
+    <span class="gps-pill"><span class="gps-dot"></span>GPS Live</span>
+    <button id="hambtn" onclick="toggleDrawer()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="breadcrumb"><a href="../broadside.html">Broadside</a> / Popular Routes</div>
+    <div class="page-title">Popular <em>Routes</em></div>
+    <p class="page-sub">The most-sailed routes on Long Island Sound and beyond, logged by the Broadside community. Tap any route to explore the map, read captain's notes and seasonal advice.</p>
+    <div class="filter-row">
+      <button class="ftag on" onclick="filterRoutes(this,'all')">All Routes</button>
+      <button class="ftag" onclick="filterRoutes(this,'day')">Day Sail</button>
+      <button class="ftag" onclick="filterRoutes(this,'overnight')">Overnight</button>
+      <button class="ftag" onclick="filterRoutes(this,'offshore')">Offshore</button>
+      <button class="ftag" onclick="filterRoutes(this,'ct')">CT Coast</button>
+      <button class="ftag" onclick="filterRoutes(this,'li')">LI Sound</button>
+    </div>
+  </div>
+</div>
+
+<div class="routes-section">
+  <div class="route-grid" id="routeGrid"></div>
+</div>
+
+<footer>
+  <div class="footer-bot">
+    <div class="footer-copy">© 2025 <b>Broadside</b></div>
+    <div class="footer-legal">
+      <a href="about.html">About</a>
+      <a href="../broadside.html">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const allRoutes = [
+  {id:1,title:"Oyster Bay to Block Island",from:"Oyster Bay, NY",to:"Block Island, RI",dist:"84 nm",duration:"10–12 hrs",season:"July–Sept",wind:"SW 12–18kt",likes:312,vessel:"Sea Duchess",vesselClass:"Hinckley Sou'wester 42",vesselImg:"https://images.unsplash.com/photo-1593351415075-3bac9f45c877?w=80&q=70",tags:["Overnight","Offshore","Bucket List"],category:["overnight","offshore","li"],note:"Classic overnight or long day sail. Leave at dawn, catch the morning ebb through the Race. Great anchorage at Great Salt Pond. Watch for Race Current — can run 3–4 knots on a spring tide.",path:[[40.87,-73.53],[40.92,-72.80],[41.16,-71.56]],from_ll:[40.87,-73.53],to_ll:[41.17,-71.56]},
+  {id:2,title:"Oyster Bay to Greenport",from:"Oyster Bay, NY",to:"Greenport, NY",dist:"43 nm",duration:"5–6 hrs",season:"May–Oct",wind:"SW 10–15kt",likes:228,vessel:"Sea Duchess",vesselClass:"Hinckley Sou'wester 42",vesselImg:"https://images.unsplash.com/photo-1593351415075-3bac9f45c877?w=80&q=70",tags:["Day Sail","North Shore","Favorite"],category:["day","li"],note:"A quintessential Long Island Sound run along the North Shore. Stop at Mattituck Inlet if you need fuel. Greenport has great dinner options within walking distance of the dock.",path:[[40.87,-73.53],[40.91,-73.10],[41.10,-72.36]],from_ll:[40.87,-73.53],to_ll:[41.10,-72.36]},
+  {id:3,title:"Sag Harbor to Newport",from:"Sag Harbor, NY",to:"Newport, RI",dist:"110 nm",duration:"14–16 hrs",season:"June–Sept",wind:"SW 12–20kt",likes:445,vessel:"Zephyrine",vesselClass:"Swan 46 MkII",vesselImg:"https://images.unsplash.com/photo-1526491109672-74740652b963?w=80&q=70",tags:["Overnight","Classic Route","Racing Circuit"],category:["overnight","offshore"],note:"Depart at midnight to arrive Newport at dusk. Watch for lobster pots east of Montauk. The Race can be brutal on a spring ebb — time your passage carefully. Worth every nautical mile.",path:[[41.00,-72.30],[41.05,-71.85],[41.49,-71.31]],from_ll:[41.00,-72.30],to_ll:[41.49,-71.31]},
+  {id:4,title:"Shelter Island Loop",from:"Sag Harbor, NY",to:"Sag Harbor, NY",dist:"28 nm",duration:"5–6 hrs",season:"All Season",wind:"Any",likes:187,vessel:"Zephyrine",vesselClass:"Swan 46 MkII",vesselImg:"https://images.unsplash.com/photo-1526491109672-74740652b963?w=80&q=70",tags:["Day Loop","Family Friendly","Scenic"],category:["day","li"],note:"A gorgeous local loop — out Shelter Island Sound, through the gut to the North Fork, back via Jessup's Neck. Lunch at Dering Harbor on Shelter Island is a must.",path:[[41.00,-72.30],[41.07,-72.31],[41.08,-72.16],[41.00,-72.30]],from_ll:[41.00,-72.30],to_ll:[41.00,-72.30]},
+  {id:5,title:"Stonington to Essex via Mystic",from:"Stonington, CT",to:"Essex, CT",dist:"55 nm",duration:"7–8 hrs",season:"May–Oct",wind:"SW 8–15kt",likes:198,vessel:"Blue Meridian",vesselClass:"J/42 Cruiser-Racer",vesselImg:"https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=80&q=70",tags:["Coastal Hop","CT Coast","Recommended"],category:["day","ct"],note:"A beautiful Connecticut coast hop. Mystic makes a perfect lunch stop — anchor off the drawbridge and dinghy in. Essex up the Connecticut River is one of the finest harbors in New England.",path:[[41.33,-71.91],[41.36,-72.00],[41.35,-72.39]],from_ll:[41.33,-71.91],to_ll:[41.35,-72.39]},
+  {id:6,title:"Stonington to Nantucket",from:"Stonington, CT",to:"Nantucket, MA",dist:"95 nm",duration:"12–14 hrs",season:"July–Aug",wind:"SW 15–20kt",likes:367,vessel:"Gale Warning",vesselClass:"Oyster 53",vesselImg:"https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=80&q=70",tags:["Offshore","Overnight","Advanced"],category:["overnight","offshore"],note:"An offshore passage that rewards good weather routing. The Great South Channel can build quickly — check forecasts carefully 48 hrs out. Arriving Nantucket Harbor at sunrise is unforgettable.",path:[[41.33,-71.91],[41.4,-71.5],[41.28,-70.09]],from_ll:[41.33,-71.91],to_ll:[41.28,-70.09]},
+  {id:7,title:"Mamaroneck to City Island",from:"Mamaroneck, NY",to:"City Island, NY",dist:"16 nm",duration:"2–3 hrs",season:"April–Nov",wind:"Any, SW ideal",likes:143,vessel:"Rhumb Line",vesselClass:"Hinckley Bermuda 40",vesselImg:"https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=80&q=70",tags:["Day Sail","Easy","Season Opener"],category:["day","li"],note:"An easy half-day sail through the western Sound. City Island has classic seafood and a great anchorage off the south end. Perfect first sail of the season after commissioning.",path:[[40.92,-73.73],[40.87,-73.78],[40.85,-73.79]],from_ll:[40.92,-73.73],to_ll:[40.85,-73.79]},
+  {id:8,title:"The Race to Fishers Island",from:"New London, CT",to:"Fishers Island, NY",dist:"12 nm",duration:"1.5–2.5 hrs",season:"June–Oct",wind:"E or W 10–20kt",likes:234,vessel:"Fair Winds",vesselClass:"Tartan 4300",vesselImg:"https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=80&q=70",tags:["Day Sail","Tidal Timing","Classic"],category:["day","ct"],note:"Short but exciting. The Race is one of the fastest tidal passages on the East Coast. Time it right on a flood and you'll surf through. Fishers Island has quiet anchorages and excellent fishing.",path:[[41.356,-72.10],[41.26,-72.0],[41.27,-71.96]],from_ll:[41.356,-72.10],to_ll:[41.27,-71.96]},
+  {id:9,title:"Long Island Sound Full Traverse",from:"New York City, NY",to:"Newport, RI",dist:"140 nm",duration:"2–3 days",season:"June–Aug",wind:"SW 10–18kt",likes:521,vessel:"Gale Warning",vesselClass:"Oyster 53",vesselImg:"https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=80&q=70",tags:["Multi-Day","Epic","Bucket List"],category:["overnight","offshore","li"],note:"The Sound traverse is a rite of passage. Day one: NYC to Oyster Bay. Day two: Oyster Bay to Mystic. Day three: Mystic to Newport. Stops can be adjusted by weather windows.",path:[[40.70,-74.00],[40.92,-73.53],[41.36,-72.00],[41.49,-71.31]],from_ll:[40.70,-74.00],to_ll:[41.49,-71.31]},
+  {id:10,title:"Westport to Greenport Cross-Sound",from:"Westport, CT",to:"Greenport, NY",dist:"22 nm",duration:"3–4 hrs",season:"May–Nov",wind:"NW or SW 10–18kt",likes:176,vessel:"Pelican Brief",vesselClass:"Beneteau Oceanis 41",vesselImg:"https://images.unsplash.com/photo-1577515607561-01e5b0d86e36?w=80&q=70",tags:["Day Sail","Cross-Sound","Fun Run"],category:["day","ct","li"],note:"A satisfying cross-Sound run from Connecticut to the North Fork. Greenport is worth the trip — great restaurants, a maritime museum, and easy-access dockage at the ferry terminal basin.",path:[[41.14,-73.36],[41.11,-73.0],[41.10,-72.36]],from_ll:[41.14,-73.36],to_ll:[41.10,-72.36]},
+];
+
+let maps = {};
+let showing = [...allRoutes];
+
+function filterRoutes(btn, f) {
+  document.querySelectorAll('.ftag').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(f==='all') showing = [...allRoutes];
+  else showing = allRoutes.filter(r=>r.category.includes(f));
+  renderRoutes();
+}
+
+function renderRoutes() {
+  const g = document.getElementById('routeGrid');
+  g.innerHTML = '';
+  // destroy old maps
+  Object.values(maps).forEach(m=>{ try{ m.remove(); }catch(e){} });
+  maps = {};
+
+  showing.forEach((r,i)=>{
+    const card = document.createElement('div');
+    card.className = 'rcard';
+    card.innerHTML = `
+      <div class="rcard-map"><div class="rcard-map-el" id="rm${r.id}"></div></div>
+      <div class="rcard-body">
+        <div class="rcard-title">${r.title}</div>
+        <div class="rcard-route"><b>${r.from}</b> → <b>${r.to}</b></div>
+        <div class="rcard-stats">
+          <div class="rst"><div class="rst-val">${r.dist}</div><div class="rst-lbl">Distance</div></div>
+          <div class="rst"><div class="rst-val">${r.duration}</div><div class="rst-lbl">Duration</div></div>
+          <div class="rst"><div class="rst-val">${r.season}</div><div class="rst-lbl">Best Season</div></div>
+          <div class="rst"><div class="rst-val" style="font-size:.72rem;">${r.wind}</div><div class="rst-lbl">Ideal Wind</div></div>
+        </div>
+        <div class="rcard-tags">${r.tags.map(t=>`<span class="rtag">${t}</span>`).join('')}</div>
+        <div class="rcard-note">"${r.note}"</div>
+        <div class="rcard-footer">
+          <div class="vessel-ref">
+            <img class="vessel-avatar" src="${r.vesselImg}" alt="${r.vessel}" onerror="this.style.display='none'">
+            <div><div class="vessel-name-sm">${r.vessel}</div><div class="vessel-class-sm">${r.vesselClass}</div></div>
+          </div>
+          <span class="rcard-likes">♥ ${r.likes}</span>
+        </div>
+      </div>`;
+    g.appendChild(card);
+
+    // init map after render
+    setTimeout(()=>{
+      const m = L.map('rm'+r.id, {
+        zoomControl:false, attributionControl:false,
+        dragging:false, scrollWheelZoom:false, doubleClickZoom:false
+      });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(m);
+      m.getContainer().style.filter = 'brightness(0.7) saturate(0.55) hue-rotate(190deg)';
+
+      const line = L.polyline(r.path,{color:'#3ab5d1',weight:2.5,opacity:.9,dashArray:'6,5'}).addTo(m);
+
+      const fromIco = L.divIcon({html:'<div style="width:9px;height:9px;border-radius:50%;background:#14a085;border:2px solid #fff;"></div>',className:'',iconAnchor:[4,4]});
+      const toIco = L.divIcon({html:'<div style="width:9px;height:9px;border-radius:50%;background:#c8a96e;border:2px solid #fff;"></div>',className:'',iconAnchor:[4,4]});
+      L.marker(r.from_ll,{icon:fromIco}).addTo(m);
+      L.marker(r.to_ll,{icon:toIco}).addTo(m);
+      m.fitBounds(line.getBounds(),{padding:[14,14]});
+      maps[r.id] = m;
+    }, 60 + i*30);
+  });
+}
+
+function toggleDrawer(){const d=document.getElementById('drawer'),o=document.getElementById('overlay'),h=document.getElementById('hambtn');const open=d.classList.toggle('open');o.classList.toggle('open',open);h.classList.toggle('open',open);document.body.style.overflow=open?'hidden':'';}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');document.getElementById('hambtn').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+
+renderRoutes();
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vessel Marketplace — Broadside</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{font-family:'DM Sans',-apple-system,sans-serif;background-color:#060e1a;color:#eef2f6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+#topnav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:56px;background-color:rgba(6,14,26,0.93);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(58,181,209,0.12)}
+.logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}.logo-mark{width:30px;height:30px;border:1px solid rgba(58,181,209,0.3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background-color:rgba(58,181,209,0.08)}.logo-type{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fafcff;letter-spacing:-.02em;line-height:1}.logo-type b{color:#3ab5d1}
+.nav-right{display:flex;align-items:center;gap:10px}.gps-pill{display:flex;align-items:center;gap:5px;background-color:rgba(20,160,133,0.12);border:1px solid rgba(20,160,133,0.28);border-radius:100px;padding:5px 10px;font-size:.68rem;font-weight:600;color:#14a085}.gps-dot{width:5px;height:5px;border-radius:50%;background-color:#14a085;animation:gpsblink 1.8s ease-in-out infinite}@keyframes gpsblink{0%,100%{opacity:1}50%{opacity:.25}}
+#hambtn{width:34px;height:34px;background:transparent;border:1px solid rgba(58,181,209,0.18);border-radius:7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}#hambtn span{display:block;height:1px;background-color:#8fb3c8;border-radius:1px;transition:all .25s ease;transform-origin:center}#hambtn span:nth-child(1){width:14px}#hambtn span:nth-child(2){width:20px}#hambtn span:nth-child(3){width:14px}#hambtn.open span:nth-child(1){width:18px;transform:rotate(45deg) translate(3px,3px);background-color:#fafcff}#hambtn.open span:nth-child(2){opacity:0}#hambtn.open span:nth-child(3){width:18px;transform:rotate(-45deg) translate(3px,-3px);background-color:#fafcff}
+#overlay{position:fixed;inset:0;background-color:rgba(0,0,0,0.55);z-index:800;opacity:0;pointer-events:none;transition:opacity .28s ease}#overlay.open{opacity:1;pointer-events:all}
+#drawer{position:fixed;top:0;right:0;width:min(260px,80vw);height:100%;background-color:#08111e;border-left:1px solid rgba(58,181,209,0.12);z-index:850;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:64px 0 32px;overflow-y:auto}#drawer.open{transform:translateX(0)}
+.d-section-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5a7f99;padding:16px 22px 6px}.d-link{display:block;padding:11px 22px;font-size:.875rem;font-weight:500;color:#8fb3c8;text-decoration:none;transition:color .2s ease,background-color .2s ease;border-left:2px solid transparent}.d-link:hover,.d-link.active{color:#fafcff;background-color:rgba(58,181,209,0.06);border-left-color:#3ab5d1}.d-divider{height:1px;background-color:rgba(58,181,209,0.1);margin:12px 22px}.d-cta{margin:24px 22px 0;padding:13px;background:linear-gradient(135deg,#0d7377,#14a085);border:none;border-radius:9px;color:#fafcff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;width:calc(100% - 44px)}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .22s ease;border:none;padding:10px 20px;line-height:1}.btn-primary{background:linear-gradient(135deg,#0d7377,#14a085);color:#fafcff}.btn-ghost{background:transparent;color:#8fb3c8;border:1px solid rgba(58,181,209,0.2)}.btn-ghost:hover{border-color:#3ab5d1;color:#fafcff}.btn-gold{background:linear-gradient(135deg,#c8a96e,#e8c98e);color:#0a1628;font-weight:700}.btn-sm{padding:7px 14px;font-size:.78rem;border-radius:6px}.btn-lg{padding:13px 30px;font-size:.92rem;border-radius:9px}
+.wrap{max-width:1100px;margin:0 auto}
+.page-header{padding:80px 20px 32px;position:relative;overflow:hidden}.page-header::before{content:'';position:absolute;top:-30%;left:-10%;width:70%;height:120%;border-radius:50%;background-color:#0d3557;opacity:.35;filter:blur(70px);pointer-events:none}.page-header-inner{position:relative;z-index:1}
+.breadcrumb{font-size:.72rem;color:#5a7f99;margin-bottom:14px}.breadcrumb a{color:#3ab5d1;text-decoration:none}
+.page-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;color:#fafcff;line-height:1.08;letter-spacing:-.03em;margin-bottom:10px}.page-title em{font-style:italic;color:#3ab5d1}
+.page-sub{font-size:.92rem;color:#8fb3c8;line-height:1.7;font-weight:300;margin-bottom:20px}
+.filter-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}.filter-row::-webkit-scrollbar{display:none}
+.ftag{flex-shrink:0;padding:6px 14px;border-radius:100px;font-size:.73rem;font-weight:600;border:1px solid rgba(58,181,209,0.18);background:transparent;color:#8fb3c8;cursor:pointer;transition:all .2s ease;white-space:nowrap;font-family:'DM Sans',sans-serif}.ftag.on,.ftag:hover{background-color:rgba(58,181,209,0.1);border-color:#3ab5d1;color:#3ab5d1}
+.content{padding:32px 20px 60px}
+.mkt-grid{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:500px){.mkt-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:800px){.mkt-grid{grid-template-columns:repeat(3,1fr)}}
+.mkt-card{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.12);border-radius:14px;overflow:hidden;transition:all .22s ease}
+.mkt-card:hover{transform:translateY(-3px);border-color:rgba(200,169,110,0.4);box-shadow:0 16px 40px rgba(0,0,0,0.4)}
+.mkt-img{position:relative;height:200px;overflow:hidden}.mkt-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .45s ease}.mkt-card:hover .mkt-img img{transform:scale(1.04)}
+.mkt-price{position:absolute;bottom:12px;right:12px;background:linear-gradient(135deg,#c8a96e,#e8c98e);color:#0a1628;font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;padding:5px 13px;border-radius:7px}
+.mkt-new{position:absolute;top:12px;left:12px;background-color:rgba(20,160,133,0.9);color:#fafcff;font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 9px;border-radius:100px}
+.mkt-body{padding:16px}
+.mkt-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:#fafcff;margin-bottom:3px}
+.mkt-model{font-size:.73rem;color:#5a7f99;margin-bottom:10px}
+.mkt-specs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.mkt-spec{background-color:rgba(10,22,40,0.5);border:1px solid rgba(58,181,209,0.1);border-radius:6px;padding:6px 8px}
+.mkt-spec-l{font-size:.58rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.07em;margin-bottom:1px}
+.mkt-spec-v{font-family:'DM Mono',monospace;font-size:.75rem;color:#eef2f6}
+.mkt-desc{font-size:.76rem;color:#8fb3c8;line-height:1.55;margin-bottom:14px}
+.mkt-harbor{font-size:.73rem;color:#3ab5d1;margin-bottom:14px}
+.mkt-actions{display:flex;gap:8px}
+.listing-modal{position:fixed;inset:0;background-color:rgba(6,14,26,0.88);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);z-index:1000;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .26s ease}
+@media(min-width:600px){.listing-modal{align-items:center;justify-content:center;padding:20px}}
+.listing-modal.open{opacity:1;pointer-events:all}
+.listing-sheet{width:100%;max-width:640px;background-color:#0b1929;border:1px solid rgba(58,181,209,0.15);border-radius:18px 18px 0 0;max-height:90svh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+@media(min-width:600px){.listing-sheet{border-radius:18px;max-height:85vh}}
+.listing-modal.open .listing-sheet{transform:translateY(0)}
+.sheet-handle{width:36px;height:3px;border-radius:2px;background-color:rgba(255,255,255,0.15);margin:10px auto 0}
+@media(min-width:600px){.sheet-handle{display:none}}
+.sheet-img{height:220px;position:relative}.sheet-img img{width:100%;height:100%;object-fit:cover;display:block}
+.sheet-close{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;background-color:rgba(0,0,0,0.6);border:none;color:#fafcff;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.sheet-body{padding:22px}
+.sheet-name{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#fafcff;margin-bottom:2px}
+.sheet-model{font-size:.75rem;color:#3ab5d1;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.sheet-price{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:#c8a96e;margin-bottom:16px}
+.sheet-specs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.s-spec{background-color:rgba(10,22,40,0.65);border:1px solid rgba(58,181,209,0.1);border-radius:7px;padding:8px 10px}
+.s-spec-l{font-size:.58rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
+.s-spec-v{font-family:'DM Mono',monospace;font-size:.78rem;color:#eef2f6}
+.sheet-divider{height:1px;background-color:rgba(58,181,209,0.1);margin:14px 0}
+.sheet-desc{font-size:.84rem;color:#8fb3c8;line-height:1.7;margin-bottom:16px}
+.sheet-contact{display:flex;gap:8px}
+footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);padding:28px 20px}.footer-bot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}.footer-copy{font-size:.7rem;color:#5a7f99}.footer-copy b{color:#c8a96e}.footer-legal{display:flex;gap:14px}.footer-legal a{font-size:.68rem;color:#5a7f99;text-decoration:none}.footer-legal a:hover{color:#fafcff}
+</style>
+</head>
+<body>
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer" aria-hidden="true">
+  <div class="d-section-label">Navigate</div>
+  <a href="../broadside.html#explore" class="d-link">Explore Feed</a>
+  <a href="../broadside.html#register" class="d-link">Register Vessel</a>
+  <a href="marketplace.html" class="d-link active">Marketplace</a>
+  <a href="chandlery.html" class="d-link">Chandlery</a>
+  <a href="../broadside.html#pricing" class="d-link">Pricing</a>
+  <div class="d-divider"></div>
+  <a href="coverage.html" class="d-link">Coverage Map</a>
+  <a href="advertise.html" class="d-link">Advertise</a>
+  <a href="about.html" class="d-link">About Broadside</a>
+  <button class="d-cta" onclick="window.location='../broadside.html#register'">Register Your Vessel — $5/mo</button>
+</div>
+<nav id="topnav">
+  <a href="../broadside.html" class="logo-wrap"><div class="logo-mark">⛵</div><span class="logo-type"><b>Broad</b>side</span></a>
+  <div class="nav-right"><span class="gps-pill"><span class="gps-dot"></span>GPS Live</span><button id="hambtn" onclick="toggleDrawer()" aria-label="Menu"><span></span><span></span><span></span></button></div>
+</nav>
+
+<div class="page-header">
+  <div class="wrap page-header-inner">
+    <div class="breadcrumb"><a href="../broadside.html">Broadside</a> / Marketplace</div>
+    <div class="page-title">Vessels <em>For Sale</em></div>
+    <p class="page-sub">Every listing is a verified, AI-photographed vessel with a real community profile, voyage history and authentic photos taken by fellow mariners.</p>
+    <div class="filter-row">
+      <button class="ftag on" onclick="doFilter(this,'all')">All Vessels</button>
+      <button class="ftag" onclick="doFilter(this,'sail')">Sailboats</button>
+      <button class="ftag" onclick="doFilter(this,'power')">Powerboats</button>
+      <button class="ftag" onclick="doFilter(this,'under75')">Under $75K</button>
+      <button class="ftag" onclick="doFilter(this,'over75')">$75K+</button>
+      <button class="ftag" onclick="doFilter(this,'ny')">New York</button>
+      <button class="ftag" onclick="doFilter(this,'ct')">Connecticut</button>
+    </div>
+  </div>
+</div>
+
+<div class="content wrap">
+  <div class="mkt-grid" id="mktGrid"></div>
+</div>
+
+<!-- LISTING MODAL -->
+<div class="listing-modal" id="lmodal" onclick="closeListing(event)">
+  <div class="listing-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-img"><img id="lImg" src="" alt=""><button class="sheet-close" onclick="document.getElementById('lmodal').classList.remove('open');document.body.style.overflow=''">✕</button></div>
+    <div class="sheet-body">
+      <div class="sheet-name" id="lName"></div>
+      <div class="sheet-model" id="lModel"></div>
+      <div class="sheet-price" id="lPrice"></div>
+      <div class="sheet-specs" id="lSpecs"></div>
+      <div class="sheet-divider"></div>
+      <div class="sheet-desc" id="lDesc"></div>
+      <div style="font-size:.72rem;color:#3ab5d1;margin-bottom:14px;" id="lHarbor"></div>
+      <div class="sheet-contact">
+        <button class="btn btn-primary" style="flex:1;justify-content:center;">Contact Seller</button>
+        <button class="btn btn-ghost" style="flex:1;justify-content:center;">Schedule Viewing</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-bot wrap">
+    <div class="footer-copy">© 2025 <b>Broadside</b></div>
+    <div class="footer-legal"><a href="about.html">About</a><a href="../broadside.html">Home</a></div>
+  </div>
+</footer>
+
+<script>
+const listings = [
+  {id:1,name:"Sandpiper",model:"Catalina 380",type:"sail",price:"$68,000",loa:"38'",year:1999,beam:"12'4\"",draft:"5'3\"",engine:"Yanmar 27hp",harbor:"Port Washington, NY",region:"ny",img:"https://images.unsplash.com/photo-1519659528534-7fd733a832a0?w=700&q=80",desc:"Well-maintained Catalina 380 in sailing condition. Recent standing rigging replacement 2023. Equipped with chart plotter, VHF, depth sounder. Wheel steering, roller furling jib. Engine in excellent condition. All USCG safety equipment current. Can be seen by appointment at Port Washington Marina.",isNew:true},
+  {id:2,name:"Laughing Gull",model:"Island Packet 38",type:"sail",price:"$54,500",loa:"38'",year:1994,beam:"11'10\"",draft:"4'8\"",engine:"Universal 35hp",harbor:"Essex, CT",region:"ct",img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=80",desc:"Classic full-keel Island Packet in bluewater-ready condition. New sails 2021. Garmin chartplotter and AIS transponder installed 2022. Teak handrails recently restored. Offshore capable — previous owner completed a Bermuda passage aboard. Clean USCG documentation.",isNew:false},
+  {id:3,name:"Rhumb Line",model:"Hinckley Bermuda 40",type:"sail",price:"$89,000",loa:"40'",year:1971,beam:"10'10\"",draft:"5'2\"",engine:"Westerbeke 40hp",harbor:"Mamaroneck, NY",region:"ny",img:"https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=700&q=80",desc:"Iconic Hinckley Bermuda 40 yawl — one of only 92 built. Completely refit 2018 including new standing and running rigging, recaulked deck, updated electrical. Original teak in remarkable condition. Survey available. One of the most sought-after classic American yachts.",isNew:false},
+  {id:4,name:"Lehua",model:"Jeanneau Sun Odyssey 44DS",type:"sail",price:"$119,000",loa:"44'",year:2012,beam:"13'11\"",draft:"6'3\"",engine:"Yanmar 54hp",harbor:"Northport, NY",region:"ny",img:"https://images.unsplash.com/photo-1577515607561-01e5b0d86e36?w=700&q=80",desc:"Jeanneau 44DS Double Stern — massive cockpit, twin helm, 3-cabin layout. Bow thruster, furling main, Code 0 on furler. Garmin full electronics suite. Ideal liveaboard or charter boat. Well-equipped and ready to sail anywhere.",isNew:true},
+  {id:5,name:"Hard Alee",model:"Pearson 365 Ketch",type:"sail",price:"$32,000",loa:"36'5\"",year:1978,beam:"11'4\"",draft:"4'6\"",engine:"Universal 35hp",harbor:"Essex, CT",region:"ct",img:"https://images.unsplash.com/photo-1519659528534-7fd733a832a0?w=700&q=80",desc:"Classic Pearson 365 Ketch — great character boat with new standing rigging (2024), diesel engine recently serviced. Ketch rig gives great light-air performance and easy single-handed sailing. New VHF and chart plotter.",isNew:false},
+  {id:6,name:"Breezy Point",model:"Grady-White Freedom 285",type:"power",price:"$89,500",loa:"28'5\"",year:2018,beam:"8'6\"",draft:"1'9\"",engine:"Twin Yamaha 150hp",harbor:"Port Washington, NY",region:"ny",img:"https://images.unsplash.com/photo-1605281317010-fe5ffe798166?w=700&q=80",desc:"2018 Grady-White 285 dual console in excellent condition. Twin Yamaha 150hp with under 200 hours. Bimini top, cockpit enclosure, freshwater washdown, live well. Garmin GPS/fishfinder. Recent bottom paint and trailer available.",isNew:false},
+  {id:7,name:"Osprey",model:"Sea Ray 350 Sundancer",type:"power",price:"$78,000",loa:"35'",year:2016,beam:"11'",draft:"3'",engine:"Twin MerCruiser 350hp",harbor:"Glen Cove, NY",region:"ny",img:"https://images.unsplash.com/photo-1564939558297-fc396f18e5c7?w=700&q=80",desc:"2016 Sea Ray 350 Sundancer in exceptional condition. Full cabin with berths for 4. Twin MerCruisers recently serviced. Raymarine electronics, bow thruster, generator, AC/heat. Just completed out of water service. Ready to cruise.",isNew:true},
+  {id:8,name:"Tide Runner",model:"Beneteau Oceanis 38",type:"sail",price:"$42,000",loa:"38'",year:2008,beam:"12'4\"",draft:"5'9\"",engine:"Yanmar 30hp",harbor:"Westport, CT",region:"ct",img:"https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=700&q=80",desc:"Beneteau Oceanis 38 — good family cruiser in solid condition. New bottom paint 2024. Roller furling jib and main, wheel steering. Chart plotter, VHF, AIS. 2-cabin layout. Priced to sell — owner upgrading.",isNew:false},
+  {id:9,name:"Windward",model:"Hunter 41 DS",type:"sail",price:"$61,000",loa:"41'",year:2005,beam:"13'6\"",draft:"4'9\"",engine:"Yanmar 40hp",harbor:"Stonington, CT",region:"ct",img:"https://images.unsplash.com/photo-1526491109672-74740652b963?w=700&q=80",desc:"Hunter 41 DS with deep shoal keel option — great for the Sound. In-boom furling main. Three-cabin layout. Full standing headroom throughout. Recent sail replacement and engine service. Located at Dodson's Boatyard.",isNew:false},
+];
+
+let current = [...listings];
+
+function doFilter(btn, f) {
+  document.querySelectorAll('.ftag').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(f==='all') current=[...listings];
+  else if(f==='sail') current=listings.filter(v=>v.type==='sail');
+  else if(f==='power') current=listings.filter(v=>v.type==='power');
+  else if(f==='under75') current=listings.filter(v=>parseInt(v.price.replace(/\D/g,''))<75000);
+  else if(f==='over75') current=listings.filter(v=>parseInt(v.price.replace(/\D/g,''))>=75000);
+  else if(f==='ny') current=listings.filter(v=>v.region==='ny');
+  else if(f==='ct') current=listings.filter(v=>v.region==='ct');
+  render();
+}
+
+function render() {
+  const g = document.getElementById('mktGrid');
+  g.innerHTML = '';
+  current.forEach(v=>{
+    const c = document.createElement('div');
+    c.className = 'mkt-card';
+    c.innerHTML = `
+      <div class="mkt-img">
+        <img src="${v.img}" alt="${v.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=700&q=80'">
+        <div class="mkt-price">${v.price}</div>
+        ${v.isNew?'<div class="mkt-new">New Listing</div>':''}
+      </div>
+      <div class="mkt-body">
+        <div class="mkt-name">${v.name}</div>
+        <div class="mkt-model">${v.model} · ${v.year}</div>
+        <div class="mkt-specs">
+          <div class="mkt-spec"><div class="mkt-spec-l">LOA</div><div class="mkt-spec-v">${v.loa}</div></div>
+          <div class="mkt-spec"><div class="mkt-spec-l">Year</div><div class="mkt-spec-v">${v.year}</div></div>
+          <div class="mkt-spec"><div class="mkt-spec-l">Type</div><div class="mkt-spec-v">${v.type==='sail'?'Sail':'Power'}</div></div>
+        </div>
+        <div class="mkt-desc">${v.desc.slice(0,100)}…</div>
+        <div class="mkt-harbor">📍 ${v.harbor}</div>
+        <div class="mkt-actions">
+          <button class="btn btn-gold btn-sm" style="flex:1;justify-content:center;" onclick="openListing(${v.id})">View Full Listing</button>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation()">📸 Photos</button>
+        </div>
+      </div>`;
+    g.appendChild(c);
+  });
+}
+
+function openListing(id) {
+  const v = listings.find(x=>x.id===id);
+  document.getElementById('lImg').src = v.img;
+  document.getElementById('lName').textContent = v.name;
+  document.getElementById('lModel').textContent = v.model + ' · ' + v.year;
+  document.getElementById('lPrice').textContent = v.price;
+  document.getElementById('lHarbor').textContent = '📍 ' + v.harbor;
+  document.getElementById('lDesc').textContent = v.desc;
+  const sp = [
+    {l:'LOA',v:v.loa},{l:'Beam',v:v.beam},{l:'Draft',v:v.draft},
+    {l:'Engine',v:v.engine},{l:'Year',v:v.year},{l:'Type',v:v.type==='sail'?'Sailing':'Power'}
+  ];
+  document.getElementById('lSpecs').innerHTML = sp.map(s=>`<div class="s-spec"><div class="s-spec-l">${s.l}</div><div class="s-spec-v">${s.v}</div></div>`).join('');
+  document.getElementById('lmodal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeListing(e){
+  if(e.target===document.getElementById('lmodal')){document.getElementById('lmodal').classList.remove('open');document.body.style.overflow='';}
+}
+
+function toggleDrawer(){const d=document.getElementById('drawer'),o=document.getElementById('overlay'),h=document.getElementById('hambtn');const open=d.classList.toggle('open');o.classList.toggle('open',open);h.classList.toggle('open',open);document.body.style.overflow=open?'hidden':'';}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');document.getElementById('hambtn').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('lmodal').classList.remove('open');closeDrawer();document.body.style.overflow='';}});
+
+render();
+</script>
+</body>
+</html>

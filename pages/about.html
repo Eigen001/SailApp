@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>About Broadside</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{font-family:'DM Sans',-apple-system,sans-serif;background-color:#060e1a;color:#eef2f6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+#topnav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:56px;background-color:rgba(6,14,26,0.93);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(58,181,209,0.12)}
+.logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}.logo-mark{width:30px;height:30px;border:1px solid rgba(58,181,209,0.3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background-color:rgba(58,181,209,0.08)}.logo-type{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fafcff;letter-spacing:-.02em;line-height:1}.logo-type b{color:#3ab5d1}
+.nav-right{display:flex;align-items:center;gap:10px}.gps-pill{display:flex;align-items:center;gap:5px;background-color:rgba(20,160,133,0.12);border:1px solid rgba(20,160,133,0.28);border-radius:100px;padding:5px 10px;font-size:.68rem;font-weight:600;color:#14a085}.gps-dot{width:5px;height:5px;border-radius:50%;background-color:#14a085;animation:gpsblink 1.8s ease-in-out infinite}@keyframes gpsblink{0%,100%{opacity:1}50%{opacity:.25}}
+#hambtn{width:34px;height:34px;background:transparent;border:1px solid rgba(58,181,209,0.18);border-radius:7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}#hambtn span{display:block;height:1px;background-color:#8fb3c8;border-radius:1px;transition:all .25s ease;transform-origin:center}#hambtn span:nth-child(1){width:14px}#hambtn span:nth-child(2){width:20px}#hambtn span:nth-child(3){width:14px}#hambtn.open span:nth-child(1){width:18px;transform:rotate(45deg) translate(3px,3px);background-color:#fafcff}#hambtn.open span:nth-child(2){opacity:0}#hambtn.open span:nth-child(3){width:18px;transform:rotate(-45deg) translate(3px,-3px);background-color:#fafcff}
+#overlay{position:fixed;inset:0;background-color:rgba(0,0,0,0.55);z-index:800;opacity:0;pointer-events:none;transition:opacity .28s ease}#overlay.open{opacity:1;pointer-events:all}
+#drawer{position:fixed;top:0;right:0;width:min(260px,80vw);height:100%;background-color:#08111e;border-left:1px solid rgba(58,181,209,0.12);z-index:850;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:64px 0 32px;overflow-y:auto}#drawer.open{transform:translateX(0)}
+.d-section-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5a7f99;padding:16px 22px 6px}.d-link{display:block;padding:11px 22px;font-size:.875rem;font-weight:500;color:#8fb3c8;text-decoration:none;transition:color .2s ease,background-color .2s ease;border-left:2px solid transparent}.d-link:hover,.d-link.active{color:#fafcff;background-color:rgba(58,181,209,0.06);border-left-color:#3ab5d1}.d-divider{height:1px;background-color:rgba(58,181,209,0.1);margin:12px 22px}.d-cta{margin:24px 22px 0;padding:13px;background:linear-gradient(135deg,#0d7377,#14a085);border:none;border-radius:9px;color:#fafcff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;width:calc(100% - 44px)}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .22s ease;border:none;padding:10px 20px;line-height:1}.btn-primary{background:linear-gradient(135deg,#0d7377,#14a085);color:#fafcff}.btn-ghost{background:transparent;color:#8fb3c8;border:1px solid rgba(58,181,209,0.2)}.btn-ghost:hover{border-color:#3ab5d1;color:#fafcff}.btn-lg{padding:13px 30px;font-size:.92rem;border-radius:9px}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+.page-header{padding:80px 20px 48px;position:relative;overflow:hidden}.page-header::before{content:'';position:absolute;top:-30%;left:-10%;width:70%;height:120%;border-radius:50%;background-color:#0d3557;opacity:.35;filter:blur(70px);pointer-events:none}.page-header-inner{position:relative;z-index:1}
+.breadcrumb{font-size:.72rem;color:#5a7f99;margin-bottom:14px}.breadcrumb a{color:#3ab5d1;text-decoration:none}
+.page-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;color:#fafcff;line-height:1.08;letter-spacing:-.03em;margin-bottom:10px}.page-title em{font-style:italic;color:#3ab5d1}
+.page-sub{font-size:.95rem;color:#8fb3c8;line-height:1.7;font-weight:300}
+.content{padding:40px 20px 64px}
+.story-block{margin-bottom:40px}
+.story-lbl{font-size:.67rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#3ab5d1;margin-bottom:8px}
+.story-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#fafcff;margin-bottom:14px}
+.story-title em{font-style:italic;color:#3ab5d1}
+.story-body{font-size:.92rem;color:#8fb3c8;line-height:1.78}
+.story-body p{margin-bottom:14px}
+.story-body p:last-child{margin-bottom:0}
+.divider{height:1px;background-color:rgba(58,181,209,0.1);margin:36px 0}
+.team-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:20px}
+@media(min-width:500px){.team-grid{grid-template-columns:repeat(2,1fr)}}
+.team-card{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.12);border-radius:12px;padding:20px;display:flex;align-items:flex-start;gap:14px}
+.team-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#0d3557,#0d7377);border:1px solid rgba(58,181,209,0.3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.team-name{font-weight:700;font-size:.9rem;color:#fafcff;margin-bottom:2px}
+.team-title{font-size:.72rem;color:#3ab5d1;margin-bottom:6px}
+.team-bio{font-size:.76rem;color:#5a7f99;line-height:1.5}
+.values-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:18px}
+@media(min-width:500px){.values-grid{grid-template-columns:repeat(2,1fr)}}
+.val-card{background-color:rgba(13,53,87,0.3);border:1px solid rgba(58,181,209,0.12);border-radius:10px;padding:16px}
+.val-icon{font-size:1.3rem;margin-bottom:8px}
+.val-title{font-weight:700;font-size:.88rem;color:#fafcff;margin-bottom:4px}
+.val-desc{font-size:.76rem;color:#5a7f99;line-height:1.5}
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:20px 0}
+@media(min-width:500px){.stats-row{grid-template-columns:repeat(4,1fr)}}
+.stat-box{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.12);border-radius:10px;padding:16px;text-align:center}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:#fafcff;line-height:1}
+.stat-num b{color:#3ab5d1}
+.stat-lbl{font-size:.62rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+.cta-band{background-color:#0d3557;border:1px solid rgba(58,181,209,0.14);border-radius:14px;padding:32px 24px;text-align:center;margin:0 20px 48px}
+.cta-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#fafcff;margin-bottom:8px}
+.cta-sub{font-size:.86rem;color:#8fb3c8;margin-bottom:20px;line-height:1.6}
+.cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);padding:28px 20px}.footer-bot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}.footer-copy{font-size:.7rem;color:#5a7f99}.footer-copy b{color:#c8a96e}.footer-legal{display:flex;gap:14px}.footer-legal a{font-size:.68rem;color:#5a7f99;text-decoration:none}.footer-legal a:hover{color:#fafcff}
+</style>
+</head>
+<body>
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer" aria-hidden="true">
+  <div class="d-section-label">Navigate</div>
+  <a href="../broadside.html#explore" class="d-link">Explore Feed</a>
+  <a href="../broadside.html#register" class="d-link">Register Vessel</a>
+  <a href="marketplace.html" class="d-link">Marketplace</a>
+  <a href="chandlery.html" class="d-link">Chandlery</a>
+  <a href="../broadside.html#pricing" class="d-link">Pricing</a>
+  <div class="d-divider"></div>
+  <a href="coverage.html" class="d-link">Coverage Map</a>
+  <a href="advertise.html" class="d-link">Advertise</a>
+  <a href="about.html" class="d-link active">About Broadside</a>
+  <button class="d-cta" onclick="window.location='../broadside.html#register'">Register Your Vessel — $5/mo</button>
+</div>
+<nav id="topnav">
+  <a href="../broadside.html" class="logo-wrap"><div class="logo-mark">⛵</div><span class="logo-type"><b>Broad</b>side</span></a>
+  <div class="nav-right"><span class="gps-pill"><span class="gps-dot"></span>GPS Live</span><button id="hambtn" onclick="toggleDrawer()" aria-label="Menu"><span></span><span></span><span></span></button></div>
+</nav>
+
+<div class="page-header">
+  <div class="wrap page-header-inner">
+    <div class="breadcrumb"><a href="../broadside.html">Broadside</a> / About</div>
+    <div class="page-title">Built by sailors,<br><em>for sailors.</em></div>
+    <p class="page-sub">Broadside started with a simple frustration: you can never get a good photo of your own boat. We built the tool we always wanted.</p>
+  </div>
+</div>
+
+<div class="content">
+  <div class="wrap">
+
+```
+<div class="story-block">
+  <div class="story-lbl">The Origin</div>
+  <div class="story-title">A photo problem <em>every sailor has</em></div>
+  <div class="story-body">
+    <p>You're heeling hard at 18 degrees, spray coming over the bow, sails perfectly trimmed for the first time all season — and there's nobody to photograph it. Your phone is in a dry bag. The only camera is yours, pointed at the wrong thing.</p>
+    <p>Meanwhile, the Oyster 53 that just ghosted past you at 8 knots? Her captain got a stunning frame of your boat, perfectly lit, under full sail. He doesn't know who you are. You'll never see that photo.</p>
+    <p>Broadside fixes that. Every photo taken of every vessel, automatically matched and delivered to the right owner. The community photographs each other, and everyone wins.</p>
+    <p>We launched on Long Island Sound in the spring of 2024 with 40 vessels. We're now at 4,200+ — and growing across New England, the Chesapeake, and the Great Lakes.</p>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-box"><div class="stat-num">4,<b>217</b></div><div class="stat-lbl">Vessels</div></div>
+  <div class="stat-box"><div class="stat-num" style="color:#14a085;">92K</div><div class="stat-lbl">Photos Matched</div></div>
+  <div class="stat-box"><div class="stat-num" style="color:#c8a96e;">31</div><div class="stat-lbl">Harbors</div></div>
+  <div class="stat-box"><div class="stat-num">98<b>%</b></div><div class="stat-lbl">Match Accuracy</div></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="story-block">
+  <div class="story-lbl">The Technology</div>
+  <div class="story-title">AI that understands <em>boats</em></div>
+  <div class="story-body">
+    <p>Our computer vision model was trained specifically on maritime vessels — not repurposed from face recognition or car identification. It understands hull profiles, sail configurations, rigging layouts, cove stripes, and registration numbers at oblique angles from moving platforms.</p>
+    <p>When a match exceeds 85% confidence, it's delivered automatically. Between 70–85%, it enters a community-assisted review queue where registered vessel owners can confirm or reject. Below 70%, it stays in the community feed untagged — still visible, still shareable.</p>
+    <p>We sync with AIS transponder data through the MMSI registry, which means we know where registered vessels are in real time and can cross-reference GPS position with photo metadata to dramatically improve match confidence.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="story-block">
+  <div class="story-lbl">Our Values</div>
+  <div class="story-title">What we <em>believe</em></div>
+  <div class="values-grid">
+    <div class="val-card"><div class="val-icon">⛵</div><div class="val-title">Community First</div><div class="val-desc">The platform only works when sailors photograph each other. We're designed to reward the photographer as much as the vessel owner.</div></div>
+    <div class="val-card"><div class="val-icon">🔒</div><div class="val-title">Privacy by Design</div><div class="val-desc">Vessel owners control their profiles. GPS data is never shared publicly. You decide what your vessel page shows.</div></div>
+    <div class="val-card"><div class="val-icon">🧭</div><div class="val-title">Accurate Data Only</div><div class="val-desc">We require USCG documentation and MMSI verification. No fake vessels, no spam accounts. Every registered boat is a real boat.</div></div>
+    <div class="val-card"><div class="val-icon">🌊</div><div class="val-title">Long Island Sound First</div><div class="val-desc">We started here. We know this water. Our coverage, harbor ratings and route data reflect the local knowledge of the community that built this.</div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="story-block">
+  <div class="story-lbl">The Team</div>
+  <div class="story-title">Who built <em>Broadside</em></div>
+  <div class="team-grid">
+    <div class="team-card"><div class="team-avatar">⛵</div><div><div class="team-name">James Whitfield</div><div class="team-title">Co-Founder & CEO</div><div class="team-bio">Oyster Bay native. Sailed since age 8. Former software engineer at maritime navigation company. Sails a Hinckley Bermuda 40 named Compass Rose.</div></div></div>
+    <div class="team-card"><div class="team-avatar">🤖</div><div><div class="team-name">Dr. Priya Nair</div><div class="team-title">Co-Founder & CTO</div><div class="team-bio">PhD Computer Vision, Cornell. Competitive sailor with a J/35. Designed the vessel identification model from scratch using maritime-specific training data.</div></div></div>
+    <div class="team-card"><div class="team-avatar">📸</div><div><div class="team-name">Tom Cavanaugh</div><div class="team-title">Head of Community</div><div class="team-bio">Former marine photographer for Sailing World magazine. Has sailed the Sound for 30 years. Runs the Broadside photography guidelines and moderation program.</div></div></div>
+    <div class="team-card"><div class="team-avatar">🗺️</div><div><div class="team-name">Sara Lindqvist</div><div class="team-title">Head of Product</div><div class="team-bio">Product designer with a background in maritime safety software. Mystic, CT. Sails a Cape Dory 36 and designed the Voyage Log feature.</div></div></div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<div class="cta-band wrap">
+  <div class="cta-title">Ready to get started?</div>
+  <p class="cta-sub">Register your vessel and let the community start building your photo archive. First month free.</p>
+  <div class="cta-btns">
+    <a href="../broadside.html#register" class="btn btn-primary btn-lg">Register Your Vessel</a>
+    <a href="contact.html" class="btn btn-ghost btn-lg">Get in Touch</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-bot" style="max-width:760px;margin:0 auto;">
+    <div class="footer-copy">© 2025 <b>Broadside</b></div>
+    <div class="footer-legal"><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="../broadside.html">Home</a></div>
+  </div>
+</footer>
+
+<script>
+function toggleDrawer(){const d=document.getElementById('drawer'),o=document.getElementById('overlay'),h=document.getElementById('hambtn');const open=d.classList.toggle('open');o.classList.toggle('open',open);h.classList.toggle('open',open);document.body.style.overflow=open?'hidden':'';}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');document.getElementById('hambtn').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+</script>
+
+</body>
+</html>

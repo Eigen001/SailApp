@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mystic, CT — Harbor Guide · Broadside</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',-apple-system,sans-serif;background-color:#060e1a;color:#eef2f6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+#topnav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:56px;background-color:rgba(6,14,26,0.93);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(58,181,209,0.12)}
+.logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-mark{width:30px;height:30px;border:1px solid rgba(58,181,209,0.3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background-color:rgba(58,181,209,0.08)}
+.logo-type{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fafcff;letter-spacing:-.02em;line-height:1}
+.logo-type b{color:#3ab5d1}
+.nav-right{display:flex;align-items:center;gap:10px}
+.gps-pill{display:flex;align-items:center;gap:5px;background-color:rgba(20,160,133,0.12);border:1px solid rgba(20,160,133,0.28);border-radius:100px;padding:5px 10px;font-size:.68rem;font-weight:600;color:#14a085}
+.gps-dot{width:5px;height:5px;border-radius:50%;background-color:#14a085;animation:gpsblink 1.8s ease-in-out infinite}
+@keyframes gpsblink{0%,100%{opacity:1}50%{opacity:.25}}
+#hambtn{width:34px;height:34px;background:transparent;border:1px solid rgba(58,181,209,0.18);border-radius:7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+#hambtn span{display:block;height:1px;background-color:#8fb3c8;border-radius:1px;transition:all .25s ease;transform-origin:center}
+#hambtn span:nth-child(1){width:14px}#hambtn span:nth-child(2){width:20px}#hambtn span:nth-child(3){width:14px}
+#hambtn.open span:nth-child(1){width:18px;transform:rotate(45deg) translate(3px,3px);background-color:#fafcff}
+#hambtn.open span:nth-child(2){opacity:0}
+#hambtn.open span:nth-child(3){width:18px;transform:rotate(-45deg) translate(3px,-3px);background-color:#fafcff}
+#overlay{position:fixed;inset:0;background-color:rgba(0,0,0,0.55);z-index:800;opacity:0;pointer-events:none;transition:opacity .28s ease}
+#overlay.open{opacity:1;pointer-events:all}
+#drawer{position:fixed;top:0;right:0;width:min(260px,80vw);height:100%;background-color:#08111e;border-left:1px solid rgba(58,181,209,0.12);z-index:850;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:64px 0 32px;overflow-y:auto}
+#drawer.open{transform:translateX(0)}
+.d-section-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5a7f99;padding:16px 22px 6px}
+.d-link{display:block;padding:11px 22px;font-size:.875rem;font-weight:500;color:#8fb3c8;text-decoration:none;transition:color .2s ease,background-color .2s ease;border-left:2px solid transparent}
+.d-link:hover,.d-link.active{color:#fafcff;background-color:rgba(58,181,209,0.06);border-left-color:#3ab5d1}
+.d-divider{height:1px;background-color:rgba(58,181,209,0.1);margin:12px 22px}
+.d-cta{margin:24px 22px 0;padding:13px;background:linear-gradient(135deg,#0d7377,#14a085);border:none;border-radius:9px;color:#fafcff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;width:calc(100% - 44px)}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .22s ease;border:none;padding:10px 20px;line-height:1}
+.btn-primary{background:linear-gradient(135deg,#0d7377,#14a085);color:#fafcff}
+.btn-ghost{background:transparent;color:#8fb3c8;border:1px solid rgba(58,181,209,0.2)}
+.btn-ghost:hover{border-color:#3ab5d1;color:#fafcff}
+.btn-sm{padding:7px 14px;font-size:.78rem;border-radius:6px}
+.btn-gold{background:linear-gradient(135deg,#c8a96e,#e8c98e);color:#0a1628;font-weight:700}
+
+/* HERO */
+.harbor-hero{padding-top:56px;position:relative;height:280px;overflow:hidden}
+@media(min-width:600px){.harbor-hero{height:360px}}
+.hero-bg{width:100%;height:100%;object-fit:cover;filter:brightness(.45)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 20%,rgba(6,14,26,.9) 100%)}
+.hero-content{position:absolute;bottom:0;left:0;right:0;padding:24px 20px;max-width:900px;margin:0 auto}
+.breadcrumb{font-size:.72rem;color:rgba(250,252,255,.6);margin-bottom:8px}
+.breadcrumb a{color:#3ab5d1;text-decoration:none}
+.harbor-name{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;color:#fafcff;line-height:1;letter-spacing:-.03em;margin-bottom:4px}
+.harbor-state{font-size:.82rem;color:#8fb3c8}
+
+/* CONTENT */
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+.content{padding:24px 20px 60px;max-width:900px;margin:0 auto}
+
+/* TOP METRICS */
+.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);background-color:#0d1f35;border:1px solid rgba(58,181,209,0.12);border-radius:13px;overflow:hidden;margin-bottom:24px}
+@media(min-width:500px){.metrics-row{grid-template-columns:repeat(6,1fr)}}
+.met{padding:14px 8px;text-align:center;border-right:1px solid rgba(58,181,209,0.08)}
+.met:last-child{border-right:none}
+.met-num{font-family:'DM Mono',monospace;font-size:1rem;font-weight:500;color:#fafcff}
+.met-lbl{font-size:.58rem;color:#5a7f99;margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+.met-stars{font-size:.75rem;color:#c8a96e;margin-top:2px}
+
+/* OVERVIEW */
+.overview-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:28px}
+@media(min-width:700px){.overview-grid{grid-template-columns:1fr 1fr}}
+.overview-left{}
+.harbor-note{font-size:.88rem;color:#8fb3c8;line-height:1.75;font-weight:300;margin-bottom:16px}
+.harbor-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.htag{padding:4px 10px;border-radius:100px;font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background-color:rgba(58,181,209,0.1);color:#3ab5d1;border:1px solid rgba(58,181,209,0.2)}
+.htag.gold{background-color:rgba(200,169,110,0.1);color:#c8a96e;border-color:rgba(200,169,110,0.25)}
+
+/* RATINGS BREAKDOWN */
+.ratings-card{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.12);border-radius:13px;padding:18px}
+.ratings-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#5a7f99;margin-bottom:14px}
+.rat-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.rat-lbl{font-size:.72rem;color:#8fb3c8;width:80px;flex-shrink:0}
+.rat-bar{flex:1;height:6px;background-color:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.rat-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#0d7377,#3ab5d1);transition:width 1s ease}
+.rat-val{font-family:'DM Mono',monospace;font-size:.75rem;font-weight:500;color:#fafcff;width:28px;text-align:right;flex-shrink:0}
+
+/* CONDITIONS WIDGET */
+.conditions-card{background:linear-gradient(135deg,#0d2540,#0d1f35);border:1px solid rgba(58,181,209,0.18);border-radius:13px;padding:18px;margin-bottom:24px}
+.cond-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.cond-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#3ab5d1}
+.cond-time{font-size:.62rem;color:#5a7f99}
+.cond-live{display:flex;align-items:center;gap:4px;font-size:.62rem;color:#14a085;font-weight:600}
+.cond-live-dot{width:5px;height:5px;border-radius:50%;background:#14a085;animation:gpsblink 1.8s ease-in-out infinite}
+.conditions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:500px){.conditions-grid{grid-template-columns:repeat(4,1fr)}}
+.cond-item{background-color:rgba(10,22,40,0.5);border:1px solid rgba(58,181,209,0.1);border-radius:9px;padding:12px}
+.cond-icon{font-size:1.2rem;margin-bottom:4px}
+.cond-lbl{font-size:.6rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.cond-val{font-family:'DM Mono',monospace;font-size:.95rem;font-weight:500;color:#fafcff}
+.cond-sub{font-size:.62rem;color:#5a7f99;margin-top:1px}
+.tide-row{margin-top:12px;padding-top:12px;border-top:1px solid rgba(58,181,209,0.1);display:flex;gap:16px;flex-wrap:wrap}
+.tide-item{display:flex;align-items:center;gap:6px}
+.tide-lbl{font-size:.65rem;color:#5a7f99}
+.tide-val{font-family:'DM Mono',monospace;font-size:.78rem;color:#3ab5d1;font-weight:500}
+
+/* MAP */
+.map-section{margin-bottom:24px}
+.sec-lbl{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#3ab5d1;margin-bottom:6px}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#fafcff;margin-bottom:14px}
+.sec-title em{color:#3ab5d1;font-style:italic}
+#harborMap{height:220px;border-radius:13px;overflow:hidden;border:1px solid rgba(58,181,209,0.15)}
+
+/* ACTIVE VESSELS */
+.vessel-list{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.vessel-row{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.1);border-radius:11px;display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;text-decoration:none;transition:all .2s ease}
+.vessel-row:hover{border-color:rgba(58,181,209,0.3);transform:translateY(-1px)}
+.vr-flag{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,#0d3557,#0d7377);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.vr-name{font-weight:600;font-size:.85rem;color:#fafcff;margin-bottom:2px}
+.vr-meta{font-size:.68rem;color:#5a7f99}
+.vr-status{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.vr-badge{padding:2px 8px;border-radius:100px;font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.vr-badge.here{background-color:rgba(20,160,133,0.15);color:#14a085;border:1px solid rgba(20,160,133,0.25)}
+.vr-badge.recent{background-color:rgba(58,181,209,0.1);color:#3ab5d1;border:1px solid rgba(58,181,209,0.2)}
+.vr-photos{font-size:.62rem;color:#5a7f99;font-family:'DM Mono',monospace}
+
+/* PHOTO GRID */
+.photo-grid-small{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:28px}
+.pgs-item{aspect-ratio:1;border-radius:6px;overflow:hidden;cursor:pointer}
+.pgs-item img{width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
+.pgs-item:hover img{transform:scale(1.05)}
+
+/* REVIEWS */
+.review-list{display:flex;flex-direction:column;gap:12px;margin-bottom:28px}
+.review-card{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.1);border-radius:12px;padding:16px}
+.review-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.review-user{font-weight:600;font-size:.8rem;color:#fafcff}
+.review-vessel{font-size:.68rem;color:#5a7f99}
+.review-stars{font-size:.8rem;color:#c8a96e;margin-left:auto}
+.review-date{font-size:.62rem;color:#5a7f99;margin-left:8px}
+.review-text{font-size:.8rem;color:#8fb3c8;line-height:1.6}
+
+footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);padding:28px 20px}
+.footer-bot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:900px;margin:0 auto}
+.footer-copy{font-size:.7rem;color:#5a7f99}.footer-copy b{color:#c8a96e}
+.footer-legal{display:flex;gap:14px}.footer-legal a{font-size:.68rem;color:#5a7f99;text-decoration:none}
+
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
+.reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer" aria-hidden="true">
+  <div class="d-section-label">Navigate</div>
+  <a href="../index.html#explore" class="d-link">Explore Feed</a>
+  <a href="upload.html" class="d-link">Submit a Photo</a>
+  <a href="harbors.html" class="d-link active">Harbor Ratings</a>
+  <a href="coverage.html" class="d-link">Coverage Map</a>
+  <div class="d-divider"></div>
+  <a href="marketplace.html" class="d-link">Marketplace</a>
+  <a href="about.html" class="d-link">About Broadside</a>
+  <button class="d-cta" onclick="window.location='../index.html#register'">Register Your Vessel — $5/mo</button>
+</div>
+
+<nav id="topnav">
+  <a href="../index.html" class="logo-wrap"><div class="logo-mark">⛵</div><span class="logo-type"><b>Broad</b>side</span></a>
+  <div class="nav-right"><span class="gps-pill"><span class="gps-dot"></span>GPS Live</span><button id="hambtn" onclick="toggleDrawer()" aria-label="Menu"><span></span><span></span><span></span></button></div>
+</nav>
+
+<!-- HERO -->
+<div class="harbor-hero">
+  <img class="hero-bg" src="https://images.unsplash.com/photo-1559308421-fe76be68a8c0?w=1200&q=80" alt="Mystic Harbor">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="breadcrumb"><a href="../index.html">Broadside</a> / <a href="harbors.html">Harbors</a> / Connecticut</div>
+    <div class="harbor-name">Mystic, CT</div>
+    <div class="harbor-state">Connecticut Shore · 41.35°N, 71.96°W · 312 mariner reviews</div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- METRICS -->
+  <div class="metrics-row reveal">
+    <div class="met"><div class="met-num">4.9</div><div class="met-stars">★★★★★</div><div class="met-lbl">Overall</div></div>
+    <div class="met"><div class="met-num" style="color:#3ab5d1">4.9</div><div class="met-lbl">Anchoring</div></div>
+    <div class="met"><div class="met-num" style="color:#3ab5d1">4.8</div><div class="met-lbl">Facilities</div></div>
+    <div class="met"><div class="met-num" style="color:#c8a96e">5.0</div><div class="met-lbl">Dining</div></div>
+    <div class="met"><div class="met-num" style="color:#3ab5d1">4.7</div><div class="met-lbl">Fuel</div></div>
+    <div class="met"><div class="met-num" style="color:#14a085">5.0</div><div class="met-lbl">Character</div></div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="overview-grid reveal">
+    <div class="overview-left">
+      <div class="sec-lbl">About This Harbor</div>
+      <div class="sec-title">Mystic — <em>crown jewel</em> of the Connecticut coast</div>
+      <p class="harbor-note">Mystic is the finest harbor destination on Long Island Sound and, by most accounts, one of the finest on the northeastern seaboard. The famous bascule drawbridge, the Mystic Seaport Museum walkable from your berth, and Abbott's Lobster in the Rough just a short dinghy ride away make this an unmissable stop for any sailor on the Sound.</p>
+      <div class="harbor-tags">
+        <span class="htag gold">Best Dining</span>
+        <span class="htag gold">Must Visit</span>
+        <span class="htag">Historic</span>
+        <span class="htag">CT River Approach</span>
+        <span class="htag">Seaport Museum</span>
+        <span class="htag">Active Broadside Zone</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm">📸 See Harbor Photos</button>
+        <a href="blog-post.html" class="btn btn-ghost btn-sm">📖 Read Harbor Guide</a>
+      </div>
+    </div>
+    <div class="ratings-card">
+      <div class="ratings-title">Category Ratings</div>
+      <div class="rat-row"><span class="rat-lbl">Anchoring</span><div class="rat-bar"><div class="rat-fill" id="rf1" style="width:0%"></div></div><span class="rat-val">4.9</span></div>
+      <div class="rat-row"><span class="rat-lbl">Facilities</span><div class="rat-bar"><div class="rat-fill" id="rf2" style="width:0%"></div></div><span class="rat-val">4.8</span></div>
+      <div class="rat-row"><span class="rat-lbl">Dining</span><div class="rat-bar"><div class="rat-fill" id="rf3" style="width:0%"></div></div><span class="rat-val">5.0</span></div>
+      <div class="rat-row"><span class="rat-lbl">Fuel</span><div class="rat-bar"><div class="rat-fill" id="rf4" style="width:0%"></div></div><span class="rat-val">4.7</span></div>
+      <div class="rat-row"><span class="rat-lbl">Safety</span><div class="rat-bar"><div class="rat-fill" id="rf5" style="width:0%"></div></div><span class="rat-val">4.9</span></div>
+      <div class="rat-row"><span class="rat-lbl">Character</span><div class="rat-bar"><div class="rat-fill" id="rf6" style="width:0%"></div></div><span class="rat-val">5.0</span></div>
+    </div>
+  </div>
+
+  <!-- CONDITIONS -->
+  <div class="conditions-card reveal">
+    <div class="cond-header">
+      <div class="cond-title">Current Conditions — Mystic River Entrance</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="cond-live"><div class="cond-live-dot"></div>Live</div>
+        <div class="cond-time">Updated 14 min ago</div>
+      </div>
+    </div>
+    <div class="conditions-grid">
+      <div class="cond-item"><div class="cond-icon">💨</div><div class="cond-lbl">Wind</div><div class="cond-val">SW 14</div><div class="cond-sub">Gusting 18 kts</div></div>
+      <div class="cond-item"><div class="cond-icon">🌊</div><div class="cond-lbl">Seas</div><div class="cond-val">1.2 ft</div><div class="cond-sub">Period 5 sec</div></div>
+      <div class="cond-item"><div class="cond-icon">🌡️</div><div class="cond-lbl">Air Temp</div><div class="cond-val">62°F</div><div class="cond-sub">Water 58°F</div></div>
+      <div class="cond-item"><div class="cond-icon">👁️</div><div class="cond-lbl">Visibility</div><div class="cond-val">10+ nm</div><div class="cond-sub">Clear skies</div></div>
+    </div>
+    <div class="tide-row">
+      <div class="tide-item"><span class="tide-lbl">Next High:</span><span class="tide-val">14:32 · 3.8 ft</span></div>
+      <div class="tide-item"><span class="tide-lbl">Next Low:</span><span class="tide-val">20:47 · 0.4 ft</span></div>
+      <div class="tide-item"><span class="tide-lbl">Current:</span><span class="tide-val">Flood +2h · 0.8 kts</span></div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-section reveal">
+    <div class="sec-lbl">Harbor Chart</div>
+    <div class="sec-title">Approach & <em>Anchorage</em></div>
+    <div id="harborMap"></div>
+    <div style="font-size:.68rem;color:#5a7f99;margin-top:8px;line-height:1.6">⚓ Anchorage areas shown in blue. Green markers indicate active Broadside vessels. Approach channel marked in dashed teal — 10ft depth at MLW. Do not cut inside the starboard markers south of the drawbridge.</div>
+  </div>
+
+  <!-- ACTIVE VESSELS -->
+  <div class="reveal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div>
+        <div class="sec-lbl">Fleet Activity</div>
+        <div class="sec-title" style="margin-bottom:0">Broadside Vessels <em>in Mystic</em></div>
+      </div>
+      <a href="../index.html#explore" class="btn btn-ghost btn-sm">View All →</a>
+    </div>
+    <div class="vessel-list" id="vesselList"></div>
+  </div>
+
+  <!-- RECENT PHOTOS -->
+  <div class="reveal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div>
+        <div class="sec-lbl">Community Photos</div>
+        <div class="sec-title" style="margin-bottom:0">Recent Photos from <em>Mystic</em></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="window.location='upload.html'">📸 Submit a Photo</button>
+    </div>
+    <div class="photo-grid-small" id="photoGrid"></div>
+  </div>
+
+  <!-- REVIEWS -->
+  <div class="reveal">
+    <div class="sec-lbl">Mariner Reviews</div>
+    <div class="sec-title">What sailors <em>say</em></div>
+    <div class="review-list" id="reviewList"></div>
+    <button class="btn btn-ghost">Write a Review</button>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-bot">
+    <div class="footer-copy">© 2025 <b>Broadside</b></div>
+    <div class="footer-legal"><a href="harbors.html">All Harbors</a><a href="about.html">About</a><a href="../index.html">Home</a></div>
+  </div>
+</footer>
+
+<script>
+// Animate rating bars
+const fills = [
+  {id:'rf1',pct:98},{id:'rf2',pct:96},{id:'rf3',pct:100},
+  {id:'rf4',pct:94},{id:'rf5',pct:98},{id:'rf6',pct:100}
+];
+setTimeout(()=>{
+  fills.forEach(f=>document.getElementById(f.id).style.width=f.pct+'%');
+},400);
+
+// MAP
+const map = L.map('harborMap',{zoomControl:false,attributionControl:false,scrollWheelZoom:false,dragging:false});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+map.setView([41.355,-71.965],14);
+// Anchorage circles
+L.circle([41.358,-71.967],{radius:200,color:'#3ab5d1',fillColor:'rgba(58,181,209,0.1)',weight:1.5,dashArray:'6,4'}).addTo(map);
+L.circle([41.354,-71.960],{radius:150,color:'#3ab5d1',fillColor:'rgba(58,181,209,0.08)',weight:1.5,dashArray:'6,4'}).addTo(map);
+// Markers
+const vIcon=L.divIcon({html:'<div style="width:10px;height:10px;border-radius:50%;background:#14a085;border:2px solid #fafcff;box-shadow:0 0 8px rgba(20,160,133,0.7)"></div>',className:'',iconAnchor:[5,5]});
+[[41.357,-71.965],[41.360,-71.962],[41.353,-71.968]].forEach(ll=>L.marker(ll,{icon:vIcon}).addTo(map));
+
+// Vessels
+const vessels = [
+  {name:"S/V Nomad", cls:"Tartan 4400", status:"here", photos:14},
+  {name:"S/V Blue Meridian", cls:"Swan 46", status:"here", photos:8},
+  {name:"M/V Harborlight", cls:"Grand Banks 42", status:"recent", photos:22},
+  {name:"S/V Patience", cls:"Tartan 4400", status:"recent", photos:6},
+];
+const vl=document.getElementById('vesselList');
+vessels.forEach(v=>{
+  const d=document.createElement('a');
+  d.className='vessel-row';d.href='vessel.html';
+  d.innerHTML=`<div class="vr-flag">⛵</div><div><div class="vr-name">${v.name}</div><div class="vr-meta">${v.cls}</div></div><div class="vr-status"><span class="vr-badge ${v.status}">${v.status==='here'?'⬤ Here now':'Recent visit'}</span><span class="vr-photos">${v.photos} photos</span></div>`;
+  vl.appendChild(d);
+});
+
+// Photos
+const photoSrcs=[
+  "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300&q=70",
+  "https://images.unsplash.com/photo-1471922694854-ff1b63b20054?w=300&q=70",
+  "https://images.unsplash.com/photo-1559308421-fe76be68a8c0?w=300&q=70",
+  "https://images.unsplash.com/photo-1526491109672-74740652b963?w=300&q=70",
+  "https://images.unsplash.com/photo-1500468756762-a401b6f17b46?w=300&q=70",
+  "https://images.unsplash.com/photo-1487887235947-a955ef187fea?w=300&q=70",
+];
+const pg=document.getElementById('photoGrid');
+photoSrcs.forEach(src=>{const d=document.createElement('div');d.className='pgs-item';d.innerHTML=`<img src="${src}" loading="lazy" alt="">`;pg.appendChild(d);});
+
+// Reviews
+const reviews=[
+  {user:"James W.", vessel:"S/V Compass Rose",date:"May 2025",stars:5,text:"Mystic deserves every star. The Seaport is steps from your berth and the drawbridge makes for dramatic arrivals. Abbott's lobster roll at the dock is a must. The anchorage was packed but well-managed — the harbor patrol was professional and helpful."},
+  {user:"Sara L.", vessel:"S/V Windfall",date:"Apr 2025",stars:5,text:"Best harbor on the Sound, full stop. Arrived late on a Friday, harbor patrol found us a spot in the anchorage within minutes. The town is genuinely beautiful. We stayed three nights instead of one. Zero regrets."},
+  {user:"Mike D.", vessel:"S/V Sundowner",date:"Oct 2024",stars:4,text:"Excellent harbor for an overnight. The only criticism is fuel dock hours are limited — call ahead in the off-season. Otherwise absolutely top tier. Character is unmatched on the coast."},
+];
+const rl=document.getElementById('reviewList');
+reviews.forEach(r=>{
+  const d=document.createElement('div');d.className='review-card';
+  d.innerHTML=`<div class="review-header"><span class="review-user">${r.user}</span><span class="review-vessel">${r.vessel}</span><span class="review-stars">${'★'.repeat(r.stars)}</span><span class="review-date">${r.date}</span></div><div class="review-text">${r.text}</div>`;
+  rl.appendChild(d);
+});
+
+// Scroll reveal
+const ro=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');});},{threshold:0.06});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+function toggleDrawer(){const d=document.getElementById('drawer'),o=document.getElementById('overlay'),h=document.getElementById('hambtn');const open=d.classList.toggle('open');o.classList.toggle('open',open);h.classList.toggle('open',open);document.body.style.overflow=open?'hidden':'';}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');document.getElementById('hambtn').classList.remove('open');document.body.style.overflow='';}
+</script>
+</body>
+</html>

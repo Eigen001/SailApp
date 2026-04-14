@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>S/V Compass Rose — Broadside Vessel Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',-apple-system,sans-serif;background-color:#060e1a;color:#eef2f6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+#topnav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:56px;background-color:rgba(6,14,26,0.93);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(58,181,209,0.12)}
+.logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-mark{width:30px;height:30px;border:1px solid rgba(58,181,209,0.3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background-color:rgba(58,181,209,0.08)}
+.logo-type{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fafcff;letter-spacing:-.02em;line-height:1}
+.logo-type b{color:#3ab5d1}
+.nav-right{display:flex;align-items:center;gap:10px}
+.gps-pill{display:flex;align-items:center;gap:5px;background-color:rgba(20,160,133,0.12);border:1px solid rgba(20,160,133,0.28);border-radius:100px;padding:5px 10px;font-size:.68rem;font-weight:600;color:#14a085}
+.gps-dot{width:5px;height:5px;border-radius:50%;background-color:#14a085;animation:gpsblink 1.8s ease-in-out infinite}
+@keyframes gpsblink{0%,100%{opacity:1}50%{opacity:.25}}
+#hambtn{width:34px;height:34px;background:transparent;border:1px solid rgba(58,181,209,0.18);border-radius:7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+#hambtn span{display:block;height:1px;background-color:#8fb3c8;border-radius:1px;transition:all .25s ease;transform-origin:center}
+#hambtn span:nth-child(1){width:14px}#hambtn span:nth-child(2){width:20px}#hambtn span:nth-child(3){width:14px}
+#hambtn.open span:nth-child(1){width:18px;transform:rotate(45deg) translate(3px,3px);background-color:#fafcff}
+#hambtn.open span:nth-child(2){opacity:0}
+#hambtn.open span:nth-child(3){width:18px;transform:rotate(-45deg) translate(3px,-3px);background-color:#fafcff}
+#overlay{position:fixed;inset:0;background-color:rgba(0,0,0,0.55);z-index:800;opacity:0;pointer-events:none;transition:opacity .28s ease}
+#overlay.open{opacity:1;pointer-events:all}
+#drawer{position:fixed;top:0;right:0;width:min(260px,80vw);height:100%;background-color:#08111e;border-left:1px solid rgba(58,181,209,0.12);z-index:850;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:64px 0 32px;overflow-y:auto}
+#drawer.open{transform:translateX(0)}
+.d-section-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5a7f99;padding:16px 22px 6px}
+.d-link{display:block;padding:11px 22px;font-size:.875rem;font-weight:500;color:#8fb3c8;text-decoration:none;transition:color .2s ease,background-color .2s ease;border-left:2px solid transparent}
+.d-link:hover,.d-link.active{color:#fafcff;background-color:rgba(58,181,209,0.06);border-left-color:#3ab5d1}
+.d-divider{height:1px;background-color:rgba(58,181,209,0.1);margin:12px 22px}
+.d-cta{margin:24px 22px 0;padding:13px;background:linear-gradient(135deg,#0d7377,#14a085);border:none;border-radius:9px;color:#fafcff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;width:calc(100% - 44px)}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .22s ease;border:none;padding:10px 20px;line-height:1}
+.btn-primary{background:linear-gradient(135deg,#0d7377,#14a085);color:#fafcff;box-shadow:0 4px 14px rgba(13,115,119,0.35)}
+.btn-ghost{background:transparent;color:#8fb3c8;border:1px solid rgba(58,181,209,0.2)}
+.btn-ghost:hover{border-color:#3ab5d1;color:#fafcff}
+.btn-gold{background:linear-gradient(135deg,#c8a96e,#e8c98e);color:#0a1628;font-weight:700}
+.btn-sm{padding:7px 14px;font-size:.78rem;border-radius:6px}
+
+/* VESSEL HERO */
+.vessel-hero{padding-top:56px;position:relative;min-height:420px;display:flex;flex-direction:column}
+.hero-main-img{width:100%;height:300px;object-fit:cover;display:block}
+@media(min-width:600px){.hero-main-img{height:420px}}
+.hero-img-overlay{position:absolute;inset:56px 0 0 0;background:linear-gradient(to bottom,rgba(6,14,26,0) 30%,rgba(6,14,26,0.9) 100%);pointer-events:none}
+.hero-content{position:relative;z-index:2;padding:0 20px 0;margin-top:-100px}
+@media(min-width:600px){.hero-content{margin-top:-140px}}
+
+.vessel-identity{display:flex;align-items:flex-end;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.vessel-flag{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#0d3557,#0d7377);border:2px solid rgba(58,181,209,0.3);display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+.vessel-name-block{}
+.vessel-name{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;color:#fafcff;line-height:1;letter-spacing:-.03em}
+.vessel-subtitle{font-size:.8rem;color:#8fb3c8;margin-top:4px}
+
+.vessel-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.vbadge{padding:4px 10px;border-radius:100px;font-size:.62rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.vbadge-teal{background-color:rgba(58,181,209,0.12);color:#3ab5d1;border:1px solid rgba(58,181,209,0.25)}
+.vbadge-gold{background-color:rgba(200,169,110,0.12);color:#c8a96e;border:1px solid rgba(200,169,110,0.25)}
+.vbadge-green{background-color:rgba(20,160,133,0.12);color:#14a085;border:1px solid rgba(20,160,133,0.25)}
+
+.hero-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+
+/* STAT BAR */
+.stat-bar{display:flex;gap:0;background-color:#0d1f35;border:1px solid rgba(58,181,209,0.12);border-radius:13px;overflow:hidden;margin:0 20px 28px}
+.stat-item{flex:1;padding:14px 12px;text-align:center;border-right:1px solid rgba(58,181,209,0.08)}
+.stat-item:last-child{border-right:none}
+.stat-num{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;color:#fafcff;line-height:1}
+.stat-num b{color:#3ab5d1}
+.stat-lbl{font-size:.6rem;color:#5a7f99;margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
+
+/* CONTENT */
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+.content{padding:0 20px 60px}
+
+/* TABS */
+.tab-row{display:flex;gap:0;border-bottom:1px solid rgba(58,181,209,0.1);margin-bottom:24px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tab-row::-webkit-scrollbar{display:none}
+.vtab{padding:12px 18px;font-size:.8rem;font-weight:600;color:#5a7f99;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s ease;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif}
+.vtab.on,.vtab:hover{color:#3ab5d1;border-bottom-color:#3ab5d1}
+.vpanel{display:none}
+.vpanel.on{display:block}
+
+/* PHOTO GRID */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:28px}
+.photo-grid .ph-item{aspect-ratio:1;overflow:hidden;border-radius:4px;cursor:pointer;position:relative}
+.photo-grid .ph-item img{width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
+.photo-grid .ph-item:hover img{transform:scale(1.04)}
+.photo-grid .ph-item .ph-badge{position:absolute;bottom:5px;right:5px;background-color:rgba(6,14,26,0.8);padding:2px 6px;border-radius:4px;font-size:.58rem;font-weight:700;color:#3ab5d1;font-family:'DM Mono',monospace}
+.ph-big{grid-column:span 2;grid-row:span 2}
+
+/* SPECS */
+.spec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:24px}
+@media(min-width:500px){.spec-grid{grid-template-columns:repeat(3,1fr)}}
+.spec-card{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.1);border-radius:10px;padding:14px}
+.spec-lbl{font-size:.62rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.spec-val{font-family:'DM Mono',monospace;font-size:.92rem;color:#fafcff;font-weight:500}
+
+/* OWNER BIO */
+.owner-card{background:linear-gradient(135deg,#0d2540,#0d1f35);border:1px solid rgba(58,181,209,0.15);border-radius:14px;padding:22px;margin-bottom:24px;display:flex;gap:16px;align-items:flex-start}
+.owner-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#0d7377,#14a085);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;border:2px solid rgba(20,160,133,0.3)}
+.owner-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:#fafcff;margin-bottom:2px}
+.owner-title{font-size:.72rem;color:#5a7f99;margin-bottom:8px}
+.owner-bio{font-size:.8rem;color:#8fb3c8;line-height:1.6}
+.owner-stats{display:flex;gap:14px;margin-top:12px}
+.os-item{text-align:center}
+.os-num{font-family:'DM Mono',monospace;font-size:.95rem;font-weight:500;color:#3ab5d1}
+.os-lbl{font-size:.6rem;color:#5a7f99}
+
+/* VOYAGE LOG */
+.voyage-card{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.1);border-radius:12px;overflow:hidden;margin-bottom:12px;cursor:pointer;transition:border-color .2s ease}
+.voyage-card:hover{border-color:rgba(58,181,209,0.3)}
+.voyage-header{display:flex;align-items:center;gap:14px;padding:16px}
+.voyage-icon{width:38px;height:38px;border-radius:9px;background-color:rgba(58,181,209,0.1);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.voyage-title{font-weight:600;font-size:.88rem;color:#fafcff;margin-bottom:3px}
+.voyage-meta{font-size:.7rem;color:#5a7f99}
+.voyage-dist{margin-left:auto;text-align:right;font-family:'DM Mono',monospace;font-size:.88rem;color:#c8a96e;font-weight:500}
+.voyage-map-wrap{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.voyage-map-wrap.open{max-height:220px}
+.voyage-map{height:180px;border-top:1px solid rgba(58,181,209,0.1)}
+.voyage-note{padding:12px 16px;font-size:.75rem;color:#5a7f99;font-style:italic;border-top:1px solid rgba(58,181,209,0.06)}
+.voyage-tags{display:flex;gap:5px;flex-wrap:wrap;padding:0 16px 12px}
+.vtag-pill{padding:2px 8px;border-radius:100px;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background-color:rgba(58,181,209,0.08);color:#3ab5d1;border:1px solid rgba(58,181,209,0.18)}
+
+/* AI MATCH SECTION */
+.ai-match-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.ai-badge{padding:4px 10px;border-radius:6px;font-size:.65rem;font-weight:700;background:linear-gradient(135deg,rgba(58,181,209,0.15),rgba(20,160,133,0.15));border:1px solid rgba(58,181,209,0.25);color:#3ab5d1;font-family:'DM Mono',monospace}
+.match-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:24px}
+@media(min-width:500px){.match-grid{grid-template-columns:repeat(4,1fr)}}
+.match-item{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.1);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .2s ease}
+.match-item:hover{border-color:rgba(58,181,209,0.3);transform:translateY(-2px)}
+.match-thumb{aspect-ratio:4/3;overflow:hidden}
+.match-thumb img{width:100%;height:100%;object-fit:cover}
+.match-info{padding:8px 10px}
+.match-pct{font-family:'DM Mono',monospace;font-size:.78rem;font-weight:500;color:#14a085}
+.match-date{font-size:.6rem;color:#5a7f99}
+
+/* FOR SALE BANNER */
+.sale-banner{background:linear-gradient(135deg,rgba(200,169,110,0.12),rgba(200,169,110,0.06));border:1px solid rgba(200,169,110,0.3);border-radius:13px;padding:20px;margin-bottom:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.sale-icon{font-size:1.8rem;flex-shrink:0}
+.sale-price{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:#c8a96e}
+.sale-lbl{font-size:.7rem;color:#8fb3c8;margin-bottom:2px}
+.sale-detail{font-size:.78rem;color:#8fb3c8;margin-top:4px}
+.sale-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+
+/* SECTION HEADERS */
+.sec-lbl{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#3ab5d1;margin-bottom:6px}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#fafcff;margin-bottom:16px;line-height:1.2}
+.sec-title em{font-style:italic;color:#3ab5d1}
+
+/* COMMUNITY SECTION */
+.community-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.recent-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:24px}
+.rp-item{aspect-ratio:1;border-radius:8px;overflow:hidden;cursor:pointer}
+.rp-item img{width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
+.rp-item:hover img{transform:scale(1.05)}
+
+/* LIGHTBOX */
+#lightbox{position:fixed;inset:0;background-color:rgba(0,0,0,0.92);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s ease}
+#lightbox.open{opacity:1;pointer-events:all}
+#lightbox img{max-width:94vw;max-height:90vh;object-fit:contain;border-radius:8px}
+#lightbox-close{position:absolute;top:20px;right:20px;width:36px;height:36px;background-color:rgba(255,255,255,0.1);border:none;border-radius:50%;color:#fafcff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);padding:28px 20px}
+.footer-bot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:900px;margin:0 auto}
+.footer-copy{font-size:.7rem;color:#5a7f99}
+.footer-copy b{color:#c8a96e}
+.footer-legal{display:flex;gap:14px}
+.footer-legal a{font-size:.68rem;color:#5a7f99;text-decoration:none}
+.footer-legal a:hover{color:#fafcff}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+.reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer" aria-hidden="true">
+  <div class="d-section-label">Navigate</div>
+  <a href="../index.html#explore" class="d-link">Explore Feed</a>
+  <a href="../index.html#register" class="d-link">Register Vessel</a>
+  <a href="marketplace.html" class="d-link">Marketplace</a>
+  <a href="chandlery.html" class="d-link">Chandlery</a>
+  <a href="../index.html#pricing" class="d-link">Pricing</a>
+  <div class="d-divider"></div>
+  <a href="coverage.html" class="d-link">Coverage Map</a>
+  <a href="upload.html" class="d-link">Upload a Photo</a>
+  <a href="about.html" class="d-link">About Broadside</a>
+  <button class="d-cta" onclick="window.location='../index.html#register'">Register Your Vessel — $5/mo</button>
+</div>
+
+<nav id="topnav">
+  <a href="../index.html" class="logo-wrap"><div class="logo-mark">⛵</div><span class="logo-type"><b>Broad</b>side</span></a>
+  <div class="nav-right"><span class="gps-pill"><span class="gps-dot"></span>GPS Live</span><button id="hambtn" onclick="toggleDrawer()" aria-label="Menu"><span></span><span></span><span></span></button></div>
+</nav>
+
+<!-- VESSEL HERO -->
+<div class="vessel-hero">
+  <img class="hero-main-img" src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&q=80" alt="S/V Compass Rose">
+  <div class="hero-img-overlay"></div>
+  <div class="hero-content">
+    <div class="vessel-identity">
+      <div class="vessel-flag">⛵</div>
+      <div class="vessel-name-block">
+        <div class="vessel-name">Compass Rose</div>
+        <div class="vessel-subtitle">S/V · Hinckley Bermuda 40 · Oyster Bay, NY</div>
+      </div>
+    </div>
+    <div class="vessel-badges">
+      <span class="vbadge vbadge-teal">Verified · MMSI 338201847</span>
+      <span class="vbadge vbadge-gold">For Sale</span>
+      <span class="vbadge vbadge-green">✓ AI Matched</span>
+    </div>
+    <div class="hero-actions">
+      <button class="btn btn-primary btn-sm">📸 Submit a Photo</button>
+      <button class="btn btn-ghost btn-sm">✉ Message Owner</button>
+      <button class="btn btn-ghost btn-sm">🔔 Follow Vessel</button>
+    </div>
+  </div>
+</div>
+
+<!-- STAT BAR -->
+<div class="stat-bar" style="max-width:860px;margin:0 auto 28px;">
+  <div class="stat-item"><div class="stat-num"><b>247</b></div><div class="stat-lbl">Photos</div></div>
+  <div class="stat-item"><div class="stat-num">38</div><div class="stat-lbl">Voyages</div></div>
+  <div class="stat-item"><div class="stat-num" style="color:#c8a96e;">2,<b>841</b></div><div class="stat-lbl">NM Logged</div></div>
+  <div class="stat-item"><div class="stat-num" style="color:#14a085;">98<b>%</b></div><div class="stat-lbl">Match Rate</div></div>
+  <div class="stat-item"><div class="stat-num">31</div><div class="stat-lbl">Followers</div></div>
+</div>
+
+<!-- FOR SALE BANNER -->
+<div class="content" style="max-width:900px;margin:0 auto;">
+  <div class="sale-banner reveal">
+    <div class="sale-icon">⚓</div>
+    <div>
+      <div class="sale-lbl">Listed For Sale</div>
+      <div class="sale-price">$285,000</div>
+      <div class="sale-detail">1987 Hinckley Bermuda 40 · Full refit 2021 · Asking price</div>
+    </div>
+    <div class="sale-actions">
+      <button class="btn btn-gold btn-sm">View Full Listing</button>
+      <button class="btn btn-ghost btn-sm">Contact Broker</button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-row">
+    <button class="vtab on" onclick="switchVTab('photos',this)">Photos (247)</button>
+    <button class="vtab" onclick="switchVTab('specs',this)">Specs</button>
+    <button class="vtab" onclick="switchVTab('voyages',this)">Voyage Log</button>
+    <button class="vtab" onclick="switchVTab('owner',this)">Owner</button>
+  </div>
+
+  <!-- PHOTOS PANEL -->
+  <div class="vpanel on" id="vp-photos">
+    <div class="ai-match-header">
+      <div class="sec-lbl" style="margin:0">AI-Matched Photos</div>
+      <div class="ai-badge">98% Accuracy</div>
+    </div>
+    <div class="photo-grid" id="photoGrid">
+      <!-- populated by JS -->
+    </div>
+    <div style="text-align:center;padding:12px 0 8px">
+      <button class="btn btn-ghost">Load More Photos</button>
+    </div>
+  </div>
+
+  <!-- SPECS PANEL -->
+  <div class="vpanel" id="vp-specs">
+    <div class="sec-lbl">Registration & Hull</div>
+    <div class="sec-title" style="margin-bottom:12px">Vessel <em>Specifications</em></div>
+    <div class="spec-grid">
+      <div class="spec-card"><div class="spec-lbl">LOA</div><div class="spec-val">40'0"</div></div>
+      <div class="spec-card"><div class="spec-lbl">Beam</div><div class="spec-val">12'6"</div></div>
+      <div class="spec-card"><div class="spec-lbl">Draft</div><div class="spec-val">5'11"</div></div>
+      <div class="spec-card"><div class="spec-lbl">Year Built</div><div class="spec-val">1987</div></div>
+      <div class="spec-card"><div class="spec-lbl">Designer</div><div class="spec-val">Sparkman & Stephens</div></div>
+      <div class="spec-card"><div class="spec-lbl">Builder</div><div class="spec-val">Hinckley Co.</div></div>
+      <div class="spec-card"><div class="spec-lbl">Hull Material</div><div class="spec-val">Fiberglass</div></div>
+      <div class="spec-card"><div class="spec-lbl">Keel</div><div class="spec-val">Full Fin</div></div>
+      <div class="spec-card"><div class="spec-lbl">Displacement</div><div class="spec-val">21,000 lbs</div></div>
+      <div class="spec-card"><div class="spec-lbl">Sail Area</div><div class="spec-val">770 sq ft</div></div>
+      <div class="spec-card"><div class="spec-lbl">MMSI</div><div class="spec-val">338201847</div></div>
+      <div class="spec-card"><div class="spec-lbl">HIN</div><div class="spec-val">HIN-CR4021987</div></div>
+    </div>
+
+    <div class="sec-lbl" style="margin-top:8px">Equipment & Systems</div>
+    <div class="sec-title" style="margin-bottom:12px">Outfitting & <em>Electronics</em></div>
+    <div class="spec-grid">
+      <div class="spec-card"><div class="spec-lbl">VHF</div><div class="spec-val">Standard Horizon GX1850</div></div>
+      <div class="spec-card"><div class="spec-lbl">Chartplotter</div><div class="spec-val">Garmin GPSMAP 7612</div></div>
+      <div class="spec-card"><div class="spec-lbl">Autopilot</div><div class="spec-val">Garmin GHP 20</div></div>
+      <div class="spec-card"><div class="spec-lbl">AIS</div><div class="spec-val">Vesper WatchMate XB-8000</div></div>
+      <div class="spec-card"><div class="spec-lbl">Engine</div><div class="spec-val">Yanmar 3JH5E 39HP</div></div>
+      <div class="spec-card"><div class="spec-lbl">Fuel (gal)</div><div class="spec-val">50 gal diesel</div></div>
+    </div>
+  </div>
+
+  <!-- VOYAGES PANEL -->
+  <div class="vpanel" id="vp-voyages">
+    <div class="sec-lbl">Logged Routes</div>
+    <div class="sec-title" style="margin-bottom:16px">Voyage <em>Log</em></div>
+    <div id="voyageList"></div>
+  </div>
+
+  <!-- OWNER PANEL -->
+  <div class="vpanel" id="vp-owner">
+    <div class="sec-lbl">Vessel Owner</div>
+    <div class="sec-title" style="margin-bottom:16px">Meet the <em>Captain</em></div>
+    <div class="owner-card">
+      <div class="owner-avatar">👨‍✈️</div>
+      <div>
+        <div class="owner-name">James Whitfield</div>
+        <div class="owner-title">Oyster Bay, NY · Member since 2024</div>
+        <div class="owner-bio">Sailing since age 8. I grew up racing Lightnings in Cold Spring Harbor and worked my way up to bluewater cruising over 30 years. Compass Rose is the fourth boat I've owned and by far the finest. She's been to Block Island, Nantucket, the Maine coast, and Bermuda. Now listing her to fund a bigger offshore passage maker.</div>
+        <div class="owner-stats">
+          <div class="os-item"><div class="os-num">247</div><div class="os-lbl">Photos</div></div>
+          <div class="os-item"><div class="os-num">38</div><div class="os-lbl">Voyages</div></div>
+          <div class="os-item"><div class="os-num">4</div><div class="os-lbl">Vessels</div></div>
+          <div class="os-item"><div class="os-num">31</div><div class="os-lbl">Years Sailing</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-ghost btn-sm">✉ Send Message</button>
+      <a href="profile.html" class="btn btn-ghost btn-sm">View Full Profile →</a>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<footer>
+  <div class="footer-bot">
+    <div class="footer-copy">© 2025 <b>Broadside</b> · Long Island Sound</div>
+    <div class="footer-legal"><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="../index.html">Home</a></div>
+  </div>
+</footer>
+
+<script>
+const photos = [
+  {src:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80",conf:"98%",date:"Apr 8"},
+  {src:"https://images.unsplash.com/photo-1471922694854-ff1b63b20054?w=600&q=80",conf:"96%",date:"Mar 29"},
+  {src:"https://images.unsplash.com/photo-1559308421-fe76be68a8c0?w=600&q=80",conf:"94%",date:"Mar 14"},
+  {src:"https://images.unsplash.com/photo-1526491109672-74740652b963?w=600&q=80",conf:"97%",date:"Mar 1"},
+  {src:"https://images.unsplash.com/photo-1500468756762-a401b6f17b46?w=600&q=80",conf:"91%",date:"Feb 22"},
+  {src:"https://images.unsplash.com/photo-1487887235947-a955ef187fea?w=600&q=80",conf:"93%",date:"Feb 10"},
+  {src:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80",conf:"99%",date:"Jan 28"},
+  {src:"https://images.unsplash.com/photo-1471922694854-ff1b63b20054?w=600&q=80",conf:"95%",date:"Jan 15"},
+  {src:"https://images.unsplash.com/photo-1559308421-fe76be68a8c0?w=600&q=80",conf:"88%",date:"Jan 4"},
+];
+
+const grid = document.getElementById('photoGrid');
+photos.forEach((p,i)=>{
+  const d = document.createElement('div');
+  d.className = 'ph-item' + (i===0?' ph-big':'');
+  d.innerHTML = `<img src="${p.src}" loading="lazy" alt=""><div class="ph-badge">${p.conf}</div>`;
+  d.onclick = ()=>openLightbox(p.src);
+  grid.appendChild(d);
+});
+
+const voyages = [
+  {icon:"🧭",title:"Block Island Overnight",from:"Oyster Bay",to:"Great Salt Pond",dist:"94 nm",dur:"16h",season:"Summer 2024",wind:"SW 12-18",tags:["Overnight","Offshore","Block Island"],note:"Perfect conditions both ways. Left at 2200 Friday, arrived 1400 Saturday. Salt Pond was packed but found a spot near the south end. Best summer sail in years.",path:[[40.87,-73.53],[41.03,-72.50],[41.17,-71.58]],from_ll:[40.87,-73.53],to_ll:[41.17,-71.58]},
+  {icon:"⚓",title:"Sag Harbor Weekend",from:"Oyster Bay",to:"Sag Harbor",dist:"51 nm",dur:"9h",season:"Spring 2024",wind:"NW 8-14",tags:["Weekend","Calm","Peconic Bay"],note:"Beautiful spring sail through the Peconic. Tied up at Village Dock, walked to LT Burger. Exactly what sailing is supposed to be.",path:[[40.87,-73.53],[40.96,-72.85],[41.00,-72.30]],from_ll:[40.87,-73.53],to_ll:[41.00,-72.30]},
+  {icon:"🌊",title:"Mystic via The Race",from:"Oyster Bay",to:"Mystic, CT",dist:"62 nm",dur:"11h",season:"Fall 2024",wind:"SW 14-20",tags:["Connecticut","The Race","Long Sail"],note:"Timed The Race at max flood — 4 knots of push. Mystic drawbridge was everything they say. Abbott's lobster roll at the dock was a religious experience.",path:[[40.87,-73.53],[41.22,-72.06],[41.36,-71.97]],from_ll:[40.87,-73.53],to_ll:[41.36,-71.97]},
+];
+
+let vmaps = {};
+const vList = document.getElementById('voyageList');
+voyages.forEach((v,i)=>{
+  const d = document.createElement('div');
+  d.className = 'voyage-card';
+  d.innerHTML = `
+    <div class="voyage-header" onclick="toggleVoyage(${i})">
+      <div class="voyage-icon">${v.icon}</div>
+      <div>
+        <div class="voyage-title">${v.title}</div>
+        <div class="voyage-meta">${v.from} → ${v.to} · ${v.season} · ${v.wind}</div>
+      </div>
+      <div class="voyage-dist">${v.dist}<br><span style="font-size:.62rem;color:#5a7f99">${v.dur}</span></div>
+    </div>
+    <div class="voyage-tags">${v.tags.map(t=>`<span class="vtag-pill">${t}</span>`).join('')}</div>
+    <div class="voyage-map-wrap" id="vmw-${i}">
+      <div class="voyage-map" id="vmap-${i}"></div>
+    </div>
+    <div class="voyage-note">"${v.note}"</div>`;
+  vList.appendChild(d);
+});
+
+function toggleVoyage(i){
+  const wrap = document.getElementById('vmw-'+i);
+  const isOpen = wrap.classList.contains('open');
+  document.querySelectorAll('.voyage-map-wrap.open').forEach(el=>el.classList.remove('open'));
+  if(!isOpen){
+    wrap.classList.add('open');
+    if(!vmaps[i]){
+      setTimeout(()=>{
+        const v = voyages[i];
+        const m = L.map('vmap-'+i,{zoomControl:false,attributionControl:false,dragging:false,scrollWheelZoom:false,doubleClickZoom:false});
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(m);
+        const line = L.polyline(v.path,{color:'#3ab5d1',weight:2.5,opacity:.9,dashArray:'6,5'}).addTo(m);
+        L.marker(v.from_ll,{icon:L.divIcon({html:'<div style="width:10px;height:10px;border-radius:50%;background:#14a085;border:2px solid #fafcff;box-shadow:0 0 6px rgba(20,160,133,0.6)"></div>',className:'',iconAnchor:[5,5]})}).addTo(m);
+        L.marker(v.to_ll,{icon:L.divIcon({html:'<div style="width:10px;height:10px;border-radius:50%;background:#c8a96e;border:2px solid #fafcff;box-shadow:0 0 6px rgba(200,169,110,0.6)"></div>',className:'',iconAnchor:[5,5]})}).addTo(m);
+        m.fitBounds(line.getBounds(),{padding:[14,14]});
+        vmaps[i]=m;
+      },60);
+    } else { setTimeout(()=>vmaps[i].invalidateSize(),60); }
+  }
+}
+
+function switchVTab(name,btn){
+  document.querySelectorAll('.vtab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.vpanel').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('vp-'+name).classList.add('on');
+}
+
+function openLightbox(src){
+  document.getElementById('lb-img').src=src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function toggleDrawer(){const d=document.getElementById('drawer'),o=document.getElementById('overlay'),h=document.getElementById('hambtn');const open=d.classList.toggle('open');o.classList.toggle('open',open);h.classList.toggle('open',open);document.body.style.overflow=open?'hidden':'';}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');document.getElementById('hambtn').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLightbox();closeDrawer();}});
+
+const ro = new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');});},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+</script>
+</body>
+</html>

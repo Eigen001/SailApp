@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Notifications & Activity — Broadside</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',-apple-system,sans-serif;background-color:#060e1a;color:#eef2f6;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+#topnav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:56px;background-color:rgba(6,14,26,0.93);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(58,181,209,0.12)}
+.logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-mark{width:30px;height:30px;border:1px solid rgba(58,181,209,0.3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background-color:rgba(58,181,209,0.08)}
+.logo-type{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fafcff;letter-spacing:-.02em;line-height:1}
+.logo-type b{color:#3ab5d1}
+.nav-right{display:flex;align-items:center;gap:10px}
+.gps-pill{display:flex;align-items:center;gap:5px;background-color:rgba(20,160,133,0.12);border:1px solid rgba(20,160,133,0.28);border-radius:100px;padding:5px 10px;font-size:.68rem;font-weight:600;color:#14a085}
+.gps-dot{width:5px;height:5px;border-radius:50%;background-color:#14a085;animation:gpsblink 1.8s ease-in-out infinite}
+@keyframes gpsblink{0%,100%{opacity:1}50%{opacity:.25}}
+#hambtn{width:34px;height:34px;background:transparent;border:1px solid rgba(58,181,209,0.18);border-radius:7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+#hambtn span{display:block;height:1px;background-color:#8fb3c8;border-radius:1px;transition:all .25s ease;transform-origin:center}
+#hambtn span:nth-child(1){width:14px}#hambtn span:nth-child(2){width:20px}#hambtn span:nth-child(3){width:14px}
+#hambtn.open span:nth-child(1){width:18px;transform:rotate(45deg) translate(3px,3px);background-color:#fafcff}
+#hambtn.open span:nth-child(2){opacity:0}
+#hambtn.open span:nth-child(3){width:18px;transform:rotate(-45deg) translate(3px,-3px);background-color:#fafcff}
+#overlay{position:fixed;inset:0;background-color:rgba(0,0,0,0.55);z-index:800;opacity:0;pointer-events:none;transition:opacity .28s ease}
+#overlay.open{opacity:1;pointer-events:all}
+#drawer{position:fixed;top:0;right:0;width:min(260px,80vw);height:100%;background-color:#08111e;border-left:1px solid rgba(58,181,209,0.12);z-index:850;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:64px 0 32px;overflow-y:auto}
+#drawer.open{transform:translateX(0)}
+.d-section-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5a7f99;padding:16px 22px 6px}
+.d-link{display:block;padding:11px 22px;font-size:.875rem;font-weight:500;color:#8fb3c8;text-decoration:none;transition:color .2s ease,background-color .2s ease;border-left:2px solid transparent}
+.d-link:hover,.d-link.active{color:#fafcff;background-color:rgba(58,181,209,0.06);border-left-color:#3ab5d1}
+.d-divider{height:1px;background-color:rgba(58,181,209,0.1);margin:12px 22px}
+.d-cta{margin:24px 22px 0;padding:13px;background:linear-gradient(135deg,#0d7377,#14a085);border:none;border-radius:9px;color:#fafcff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;width:calc(100% - 44px)}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .22s ease;border:none;padding:10px 20px;line-height:1}
+.btn-primary{background:linear-gradient(135deg,#0d7377,#14a085);color:#fafcff;box-shadow:0 4px 14px rgba(13,115,119,0.25)}
+.btn-ghost{background:transparent;color:#8fb3c8;border:1px solid rgba(58,181,209,0.2)}
+.btn-ghost:hover{border-color:#3ab5d1;color:#fafcff}
+.btn-sm{padding:7px 14px;font-size:.78rem;border-radius:6px}
+
+/* PAGE */
+.page-header{padding:80px 20px 24px;max-width:760px;margin:0 auto}
+.breadcrumb{font-size:.72rem;color:#5a7f99;margin-bottom:12px}
+.breadcrumb a{color:#3ab5d1;text-decoration:none}
+.page-title-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:6px}
+.page-title{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:900;color:#fafcff;letter-spacing:-.03em;line-height:1}
+.page-title em{color:#3ab5d1;font-style:italic}
+.unread-badge{padding:4px 12px;border-radius:100px;background-color:rgba(58,181,209,0.15);border:1px solid rgba(58,181,209,0.25);font-family:'DM Mono',monospace;font-size:.72rem;color:#3ab5d1;font-weight:500}
+
+/* VESSEL SUMMARY CARD */
+.vessel-summary{background:linear-gradient(135deg,#0d2540,#0d1f35);border:1px solid rgba(58,181,209,0.2);border-radius:14px;padding:18px;margin:0 20px 28px;max-width:720px;margin-left:auto;margin-right:auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.vs-flag{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#0d3557,#0d7377);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;border:1px solid rgba(58,181,209,0.2)}
+.vs-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#fafcff;margin-bottom:2px}
+.vs-sub{font-size:.72rem;color:#5a7f99}
+.vs-stats{display:flex;gap:16px;margin-left:auto}
+.vs-stat{text-align:center}
+.vs-num{font-family:'DM Mono',monospace;font-size:1rem;color:#fafcff;font-weight:500}
+.vs-num b{color:#3ab5d1}
+.vs-lbl{font-size:.58rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.05em}
+
+/* TABS */
+.tab-strip{display:flex;gap:0;max-width:760px;margin:0 auto 0;padding:0 20px;border-bottom:1px solid rgba(58,181,209,0.1)}
+.ntab{padding:10px 16px;font-size:.78rem;font-weight:600;color:#5a7f99;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;transition:all .2s ease;position:relative}
+.ntab.on,.ntab:hover{color:#3ab5d1;border-bottom-color:#3ab5d1}
+.ntab .n-count{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;background-color:#3ab5d1;border-radius:50%;font-size:.55rem;color:#060e1a;font-weight:700;margin-left:5px}
+.npanel{display:none}.npanel.on{display:block}
+
+/* NOTIFICATION ITEMS */
+.notif-wrap{max-width:760px;margin:0 auto;padding:8px 20px 60px}
+.notif-date-label{font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#3ab5d1;padding:20px 0 8px}
+.notif-item{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:12px;margin-bottom:4px;cursor:pointer;transition:background-color .2s ease;position:relative}
+.notif-item:hover{background-color:rgba(58,181,209,0.04)}
+.notif-item.unread{background-color:rgba(58,181,209,0.04)}
+.notif-item.unread::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background-color:#3ab5d1;border-radius:2px}
+.notif-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;border:1px solid}
+.notif-icon.match{background-color:rgba(20,160,133,0.12);border-color:rgba(20,160,133,0.2)}
+.notif-icon.photo{background-color:rgba(58,181,209,0.1);border-color:rgba(58,181,209,0.2)}
+.notif-icon.payout{background-color:rgba(200,169,110,0.12);border-color:rgba(200,169,110,0.2)}
+.notif-icon.follow{background-color:rgba(90,127,153,0.12);border-color:rgba(90,127,153,0.2)}
+.notif-icon.badge{background-color:rgba(200,169,110,0.15);border-color:rgba(200,169,110,0.25)}
+.notif-icon.system{background-color:rgba(58,181,209,0.08);border-color:rgba(58,181,209,0.15)}
+.notif-content{flex:1;min-width:0}
+.notif-title{font-size:.83rem;font-weight:600;color:#fafcff;margin-bottom:3px;line-height:1.35}
+.notif-title.unread-text{color:#fafcff}
+.notif-body{font-size:.75rem;color:#8fb3c8;line-height:1.5;margin-bottom:6px}
+.notif-time{font-size:.62rem;color:#5a7f99}
+.notif-thumb{width:44px;height:36px;border-radius:6px;overflow:hidden;flex-shrink:0;align-self:center}
+.notif-thumb img{width:100%;height:100%;object-fit:cover}
+.notif-action-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+
+/* VESSEL ACTIVITY STREAM */
+.activity-stream{margin-bottom:24px}
+.stream-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(58,181,209,0.06);align-items:flex-start}
+.stream-item:last-child{border-bottom:none}
+.stream-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px}
+.stream-text{font-size:.8rem;color:#8fb3c8;line-height:1.55;flex:1}
+.stream-text strong{color:#fafcff;font-weight:600}
+.stream-time{font-size:.62rem;color:#5a7f99;flex-shrink:0;margin-top:3px;white-space:nowrap}
+
+/* PHOTO PREVIEW STRIP */
+.new-photos-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:20px}
+.new-photos-strip::-webkit-scrollbar{display:none}
+.np-item{flex-shrink:0;width:88px;height:72px;border-radius:9px;overflow:hidden;cursor:pointer;position:relative;border:1px solid rgba(58,181,209,0.15)}
+.np-item img{width:100%;height:100%;object-fit:cover}
+.np-conf{position:absolute;bottom:4px;right:4px;background-color:rgba(6,14,26,0.85);font-family:'DM Mono',monospace;font-size:.55rem;font-weight:500;color:#14a085;padding:1px 5px;border-radius:3px}
+
+/* PAYOUT CARD */
+.payout-card{background:linear-gradient(135deg,rgba(200,169,110,0.1),rgba(200,169,110,0.04));border:1px solid rgba(200,169,110,0.25);border-radius:13px;padding:18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.payout-icon{font-size:1.6rem;flex-shrink:0}
+.payout-amount{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:500;color:#c8a96e}
+.payout-lbl{font-size:.68rem;color:#8fb3c8;margin-bottom:2px}
+.payout-detail{font-size:.72rem;color:#5a7f99;margin-top:2px}
+.payout-action{margin-left:auto}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:48px 20px;color:#5a7f99}
+.empty-icon{font-size:2.5rem;margin-bottom:12px;opacity:.5}
+.empty-title{font-size:.9rem;font-weight:600;color:#8fb3c8;margin-bottom:6px}
+.empty-sub{font-size:.76rem;line-height:1.6}
+
+footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);padding:28px 20px;margin-top:20px}
+.footer-bot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:760px;margin:0 auto}
+.footer-copy{font-size:.7rem;color:#5a7f99}.footer-copy b{color:#c8a96e}
+.footer-legal{display:flex;gap:14px}.footer-legal a{font-size:.68rem;color:#5a7f99;text-decoration:none}
+</style>
+</head>
+<body>
+
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer" aria-hidden="true">
+  <div class="d-section-label">Navigate</div>
+  <a href="../index.html#explore" class="d-link">Explore Feed</a>
+  <a href="vessel.html" class="d-link">My Vessel</a>
+  <a href="upload.html" class="d-link">Submit a Photo</a>
+  <a href="profile.html" class="d-link">My Profile</a>
+  <div class="d-divider"></div>
+  <a href="marketplace.html" class="d-link">Marketplace</a>
+  <a href="coverage.html" class="d-link">Coverage Map</a>
+  <a href="about.html" class="d-link">About Broadside</a>
+  <button class="d-cta" onclick="window.location='../index.html#register'">Register Your Vessel — $5/mo</button>
+</div>
+
+<nav id="topnav">
+  <a href="../index.html" class="logo-wrap"><div class="logo-mark">⛵</div><span class="logo-type"><b>Broad</b>side</span></a>
+  <div class="nav-right"><span class="gps-pill"><span class="gps-dot"></span>GPS Live</span><button id="hambtn" onclick="toggleDrawer()" aria-label="Menu"><span></span><span></span><span></span></button></div>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="breadcrumb"><a href="../index.html">Broadside</a> / Dashboard</div>
+  <div class="page-title-row">
+    <div class="page-title">Activity <em>Feed</em></div>
+    <span class="unread-badge">7 unread</span>
+  </div>
+  <p style="font-size:.8rem;color:#5a7f99;margin-top:4px">Vessel matches, new photos, payouts and community updates for your fleet.</p>
+</div>
+
+<!-- VESSEL CARD -->
+<div class="vessel-summary">
+  <div class="vs-flag">⛵</div>
+  <div>
+    <div class="vs-name">S/V Compass Rose</div>
+    <div class="vs-sub">Hinckley Bermuda 40 · Oyster Bay, NY</div>
+  </div>
+  <div class="vs-stats">
+    <div class="vs-stat"><div class="vs-num"><b>247</b></div><div class="vs-lbl">Photos</div></div>
+    <div class="vs-stat"><div class="vs-num" style="color:#14a085">7</div><div class="vs-lbl">New</div></div>
+    <div class="vs-stat"><div class="vs-num" style="color:#c8a96e">$47</div><div class="vs-lbl">Pending</div></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tab-strip">
+  <button class="ntab on" onclick="switchNTab('all',this)">All <span class="n-count">7</span></button>
+  <button class="ntab" onclick="switchNTab('matches',this)">Matches <span class="n-count">4</span></button>
+  <button class="ntab" onclick="switchNTab('photos',this)">New Photos</button>
+  <button class="ntab" onclick="switchNTab('payouts',this)">Payouts</button>
+  <button class="ntab" onclick="switchNTab('community',this)">Community</button>
+</div>
+
+<!-- NOTIFICATIONS -->
+<div class="notif-wrap">
+
+  <!-- ALL PANEL -->
+  <div class="npanel on" id="np-all">
+
+    <!-- NEW PHOTOS STRIP -->
+    <div style="font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#3ab5d1;padding:20px 0 10px">New photos of Compass Rose</div>
+    <div class="new-photos-strip">
+      <div class="np-item"><img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=200&q=70"><div class="np-conf">98%</div></div>
+      <div class="np-item"><img src="https://images.unsplash.com/photo-1471922694854-ff1b63b20054?w=200&q=70"><div class="np-conf">94%</div></div>
+      <div class="np-item"><img src="https://images.unsplash.com/photo-1526491109672-74740652b963?w=200&q=70"><div class="np-conf">87%</div></div>
+      <div class="np-item"><img src="https://images.unsplash.com/photo-1559308421-fe76be68a8c0?w=200&q=70"><div class="np-conf">91%</div></div>
+      <div class="np-item" style="border-style:dashed;display:flex;align-items:center;justify-content:center;background-color:rgba(13,31,53,0.4)"><span style="font-size:.65rem;color:#3ab5d1;text-align:center;padding:6px">+3 more →</span></div>
+    </div>
+    <div style="margin-bottom:8px">
+      <a href="vessel.html" class="btn btn-ghost btn-sm">View all on vessel page →</a>
+    </div>
+
+    <!-- PAYOUT CARD -->
+    <div class="notif-date-label">Earnings</div>
+    <div class="payout-card">
+      <div class="payout-icon">💰</div>
+      <div>
+        <div class="payout-lbl">Pending payout</div>
+        <div class="payout-amount">$47.50</div>
+        <div class="payout-detail">From 6 confirmed photo downloads this month</div>
+      </div>
+      <div class="payout-action"><button class="btn btn-sm" style="background:linear-gradient(135deg,#c8a96e,#e8c98e);color:#0a1628;font-weight:700;border:none">Withdraw</button></div>
+    </div>
+
+    <div class="notif-date-label">Today</div>
+    <div id="notif-today"></div>
+
+    <div class="notif-date-label">This Week</div>
+    <div id="notif-week"></div>
+
+    <div style="text-align:center;padding:16px 0">
+      <button class="btn btn-ghost btn-sm" onclick="markAllRead()">✓ Mark all as read</button>
+    </div>
+  </div>
+
+  <!-- MATCHES PANEL -->
+  <div class="npanel" id="np-matches">
+    <div class="notif-date-label">Recent AI Matches</div>
+    <div id="match-list-panel"></div>
+  </div>
+
+  <!-- PHOTOS PANEL -->
+  <div class="npanel" id="np-photos">
+    <p style="font-size:.8rem;color:#5a7f99;padding:16px 0 12px;line-height:1.6">7 new community photos were matched to your vessel this week. Tap any photo to view full resolution and photographer credit.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:20px" id="photosGrid"></div>
+    <a href="vessel.html" class="btn btn-ghost btn-sm">View vessel page →</a>
+  </div>
+
+  <!-- PAYOUTS PANEL -->
+  <div class="npanel" id="np-payouts">
+    <div class="notif-date-label">April 2025</div>
+    <div class="payout-card"><div class="payout-icon">💰</div><div><div class="payout-lbl">Pending</div><div class="payout-amount">$47.50</div><div class="payout-detail">6 downloads · processing Apr 30</div></div><div class="payout-action"><button class="btn btn-sm" style="background:linear-gradient(135deg,#c8a96e,#e8c98e);color:#0a1628;font-weight:700;border:none">Withdraw</button></div></div>
+    <div class="notif-date-label">March 2025</div>
+    <div class="payout-card" style="opacity:.7"><div class="payout-icon">✅</div><div><div class="payout-lbl">Paid out</div><div class="payout-amount">$31.00</div><div class="payout-detail">4 downloads · paid Mar 28</div></div></div>
+    <div class="notif-date-label">February 2025</div>
+    <div class="payout-card" style="opacity:.7"><div class="payout-icon">✅</div><div><div class="payout-lbl">Paid out</div><div class="payout-amount">$24.50</div><div class="payout-detail">3 downloads · paid Feb 24</div></div></div>
+  </div>
+
+  <!-- COMMUNITY PANEL -->
+  <div class="npanel" id="np-community">
+    <div class="notif-date-label">Community Activity</div>
+    <div class="activity-stream" id="communityStream"></div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-bot">
+    <div class="footer-copy">© 2025 <b>Broadside</b></div>
+    <div class="footer-legal"><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="../index.html">Home</a></div>
+  </div>
+</footer>
+
+<script>
+const todayNotifs = [
+  {icon:"match",em:"🤖",title:"New AI Match — 98% Confidence",body:"Tom Cavanaugh photographed Compass Rose off Oyster Bay today. Match delivered automatically.",time:"2h ago",unread:true,thumb:"https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=120&q=60",actions:[{label:"View Photo",primary:true},{label:"Thank Photographer",primary:false}]},
+  {icon:"match",em:"🤖",title:"New AI Match — 94% Confidence",body:"Photo submitted from Northport harbor. Community review confirmed by 2 members.",time:"4h ago",unread:true,thumb:"https://images.unsplash.com/photo-1471922694854-ff1b63b20054?w=120&q=60",actions:[{label:"View Photo",primary:true}]},
+  {icon:"payout",em:"💰",title:"Payout Milestone",body:"Your April earnings reached $47.50 — above your monthly average. Withdrawal available.",time:"5h ago",unread:true,actions:[{label:"Withdraw",primary:true}]},
+];
+
+const weekNotifs = [
+  {icon:"photo",em:"📸",title:"5 New Photos This Week",body:"Your vessel appeared in 5 community photos across Oyster Bay and Northport.",time:"Yesterday",unread:false,actions:[{label:"View on Vessel Page",primary:false}]},
+  {icon:"follow",em:"👤",title:"3 New Followers",body:"@priya_nair_sails, @capejohnson, and @sail_sound are now following Compass Rose.",time:"2 days ago",unread:false},
+  {icon:"match",em:"🤖",title:"New AI Match — 87% Confidence",body:"Photo entered community review queue. 2 confirmations needed — 0 so far.",time:"3 days ago",unread:false,thumb:"https://images.unsplash.com/photo-1526491109672-74740652b963?w=120&q=60",actions:[{label:"Confirm Match",primary:true},{label:"Reject",primary:false}]},
+  {icon:"badge",em:"🏆",title:"Vessel Hit 200 Photos",body:"Compass Rose has now accumulated 200+ community photos. Top 5% of registered vessels.",time:"4 days ago",unread:false},
+  {icon:"system",em:"🔔",title:"Coverage Expanded to New Haven, CT",body:"Broadside's coverage zone now includes New Haven Harbor. New vessels welcome.",time:"5 days ago",unread:false},
+];
+
+function buildNotifItem(n) {
+  const d = document.createElement('div');
+  d.className = 'notif-item' + (n.unread ? ' unread' : '');
+  const actions = n.actions ? n.actions.map(a=>`<button class="btn btn-sm ${a.primary?'btn-primary':'btn-ghost'}">${a.label}</button>`).join('') : '';
+  d.innerHTML = `
+    <div class="notif-icon ${n.icon}">${n.em}</div>
+    <div class="notif-content">
+      <div class="notif-title">${n.title}</div>
+      <div class="notif-body">${n.body}</div>
+      ${actions ? `<div class="notif-action-row">${actions}</div>` : ''}
+      <div class="notif-time">${n.time}</div>
+    </div>
+    ${n.thumb ? `<div class="notif-thumb"><img src="${n.thumb}" loading="lazy" alt=""></div>` : ''}`;
+  d.onclick = () => { d.classList.remove('unread'); };
+  return d;
+}
+
+const todayEl = document.getElementById('notif-today');
+todayNotifs.forEach(n => todayEl.appendChild(buildNotifItem(n)));
+
+const weekEl = document.getElementById('notif-week');
+weekNotifs.forEach(n => weekEl.appendChild(buildNotifItem(n)));
+
+// Matches panel
+const matchPanel = document.getElementById('match-list-panel');
+[...todayNotifs,...weekNotifs].filter(n=>n.icon==='match').forEach(n=>matchPanel.appendChild(buildNotifItem(n)));
+
+// Photos grid
+const pg = document.getElementById('photosGrid');
+const photoSrcs = [
+  "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300&q=70",
+  "https://images.unsplash.com/photo-1471922694854-ff1b63b20054?w=300&q=70",
+  "https://images.unsplash.com/photo-1526491109672-74740652b963?w=300&q=70",
+  "https://images.unsplash.com/photo-1559308421-fe76be68a8c0?w=300&q=70",
+  "https://images.unsplash.com/photo-1500468756762-a401b6f17b46?w=300&q=70",
+  "https://images.unsplash.com/photo-1487887235947-a955ef187fea?w=300&q=70",
+  "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300&q=70",
+];
+photoSrcs.forEach(src=>{
+  const d=document.createElement('div');d.style.cssText='aspect-ratio:1;border-radius:7px;overflow:hidden;cursor:pointer';
+  d.innerHTML=`<img src="${src}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`;
+  pg.appendChild(d);
+});
+
+// Community stream
+const communityItems = [
+  {dot:"teal",text:"<strong>Tom Cavanaugh</strong> submitted 14 new photos from Oyster Bay this week, including 3 matches to registered vessels",time:"Today"},
+  {dot:"green",text:"<strong>S/V Blue Meridian</strong> (Swan 46) logged a new voyage from Northport to Mystic — <strong>62 nm</strong>",time:"Yesterday"},
+  {dot:"gold",text:"<strong>Broadside Fleet</strong> hit 4,217 registered vessels — a new milestone",time:"2 days ago"},
+  {dot:"teal",text:"<strong>Dr. Priya Nair</strong> updated the AI match model — average confidence improved from 91% to 94%",time:"3 days ago"},
+  {dot:"green",text:"<strong>Block Island</strong> harbor season opens — 47 registered vessels already in the Great Salt Pond",time:"4 days ago"},
+];
+const cs = document.getElementById('communityStream');
+communityItems.forEach(item=>{
+  const d=document.createElement('div');d.className='stream-item';
+  d.innerHTML=`<div class="stream-dot" style="background-color:${item.dot==='teal'?'#3ab5d1':item.dot==='green'?'#14a085':'#c8a96e'}"></div><div class="stream-text">${item.text}</div><div class="stream-time">${item.time}</div>`;
+  cs.appendChild(d);
+});
+
+function switchNTab(name,btn){
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.npanel').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('np-'+name).classList.add('on');
+}
+
+function markAllRead(){
+  document.querySelectorAll('.notif-item.unread').forEach(el=>el.classList.remove('unread'));
+  document.querySelectorAll('.n-count').forEach(el=>el.remove());
+  document.querySelector('.unread-badge').textContent='0 unread';
+}
+
+function toggleDrawer(){const d=document.getElementById('drawer'),o=document.getElementById('overlay'),h=document.getElementById('hambtn');const open=d.classList.toggle('open');o.classList.toggle('open',open);h.classList.toggle('open',open);document.body.style.overflow=open?'hidden':'';}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');document.getElementById('hambtn').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+</script>
+</body>
+</html>

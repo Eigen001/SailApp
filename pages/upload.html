@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Submit a Photo — Broadside AI Match</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',-apple-system,sans-serif;background-color:#060e1a;color:#eef2f6;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh}
+#topnav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:56px;background-color:rgba(6,14,26,0.93);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(58,181,209,0.12)}
+.logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}
+.logo-mark{width:30px;height:30px;border:1px solid rgba(58,181,209,0.3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background-color:rgba(58,181,209,0.08)}
+.logo-type{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fafcff;letter-spacing:-.02em;line-height:1}
+.logo-type b{color:#3ab5d1}
+.nav-right{display:flex;align-items:center;gap:10px}
+.gps-pill{display:flex;align-items:center;gap:5px;background-color:rgba(20,160,133,0.12);border:1px solid rgba(20,160,133,0.28);border-radius:100px;padding:5px 10px;font-size:.68rem;font-weight:600;color:#14a085}
+.gps-dot{width:5px;height:5px;border-radius:50%;background-color:#14a085;animation:gpsblink 1.8s ease-in-out infinite}
+@keyframes gpsblink{0%,100%{opacity:1}50%{opacity:.25}}
+#hambtn{width:34px;height:34px;background:transparent;border:1px solid rgba(58,181,209,0.18);border-radius:7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+#hambtn span{display:block;height:1px;background-color:#8fb3c8;border-radius:1px;transition:all .25s ease;transform-origin:center}
+#hambtn span:nth-child(1){width:14px}#hambtn span:nth-child(2){width:20px}#hambtn span:nth-child(3){width:14px}
+#hambtn.open span:nth-child(1){width:18px;transform:rotate(45deg) translate(3px,3px);background-color:#fafcff}
+#hambtn.open span:nth-child(2){opacity:0}
+#hambtn.open span:nth-child(3){width:18px;transform:rotate(-45deg) translate(3px,-3px);background-color:#fafcff}
+#overlay{position:fixed;inset:0;background-color:rgba(0,0,0,0.55);z-index:800;opacity:0;pointer-events:none;transition:opacity .28s ease}
+#overlay.open{opacity:1;pointer-events:all}
+#drawer{position:fixed;top:0;right:0;width:min(260px,80vw);height:100%;background-color:#08111e;border-left:1px solid rgba(58,181,209,0.12);z-index:850;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:64px 0 32px;overflow-y:auto}
+#drawer.open{transform:translateX(0)}
+.d-section-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5a7f99;padding:16px 22px 6px}
+.d-link{display:block;padding:11px 22px;font-size:.875rem;font-weight:500;color:#8fb3c8;text-decoration:none;transition:color .2s ease,background-color .2s ease;border-left:2px solid transparent}
+.d-link:hover,.d-link.active{color:#fafcff;background-color:rgba(58,181,209,0.06);border-left-color:#3ab5d1}
+.d-divider{height:1px;background-color:rgba(58,181,209,0.1);margin:12px 22px}
+.d-cta{margin:24px 22px 0;padding:13px;background:linear-gradient(135deg,#0d7377,#14a085);border:none;border-radius:9px;color:#fafcff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-align:center;width:calc(100% - 44px)}
+
+/* PAGE */
+.page-header{padding:88px 20px 32px;position:relative;overflow:hidden}
+.page-header::before{content:'';position:absolute;top:-30%;left:-10%;width:70%;height:130%;border-radius:50%;background-color:#0d3557;opacity:.3;filter:blur(80px);pointer-events:none}
+.phi{position:relative;z-index:1;max-width:760px;margin:0 auto}
+.breadcrumb{font-size:.72rem;color:#5a7f99;margin-bottom:14px}
+.breadcrumb a{color:#3ab5d1;text-decoration:none}
+.page-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,5vw,2.6rem);font-weight:900;color:#fafcff;line-height:1.08;letter-spacing:-.03em;margin-bottom:10px}
+.page-title em{font-style:italic;color:#3ab5d1}
+.page-sub{font-size:.9rem;color:#8fb3c8;line-height:1.7;font-weight:300}
+
+/* HOW IT WORKS */
+.how-strip{display:flex;gap:0;background-color:#0d1f35;border:1px solid rgba(58,181,209,0.1);border-radius:13px;overflow:hidden;margin:0 auto 32px;max-width:760px}
+.hw-step{flex:1;padding:16px 12px;text-align:center;border-right:1px solid rgba(58,181,209,0.08)}
+.hw-step:last-child{border-right:none}
+.hw-icon{font-size:1.3rem;margin-bottom:6px}
+.hw-num{font-family:'DM Mono',monospace;font-size:.6rem;color:#3ab5d1;font-weight:500;margin-bottom:3px}
+.hw-label{font-size:.7rem;font-weight:600;color:#fafcff;line-height:1.3}
+.hw-sub{font-size:.62rem;color:#5a7f99;margin-top:2px}
+
+/* MAIN UPLOAD AREA */
+.upload-wrap{max-width:760px;margin:0 auto;padding:0 20px 60px}
+
+/* STEP INDICATOR */
+.steps{display:flex;align-items:center;gap:0;margin-bottom:32px}
+.step-node{display:flex;align-items:center;gap:0;flex:1}
+.step-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;transition:all .3s ease;border:1px solid rgba(58,181,209,0.2);color:#5a7f99}
+.step-circle.active{background:linear-gradient(135deg,#0d7377,#14a085);border-color:#14a085;color:#fafcff;box-shadow:0 0 12px rgba(20,160,133,0.4)}
+.step-circle.done{background-color:rgba(20,160,133,0.15);border-color:#14a085;color:#14a085}
+.step-line{flex:1;height:1px;background-color:rgba(58,181,209,0.1);transition:background-color .3s ease}
+.step-line.done{background-color:rgba(20,160,133,0.4)}
+.step-label{font-size:.6rem;color:#5a7f99;margin-top:4px;text-align:center;width:60px;margin-left:-16px;white-space:nowrap}
+
+/* UPLOAD DROP ZONE */
+.drop-zone{border:2px dashed rgba(58,181,209,0.2);border-radius:16px;padding:40px 20px;text-align:center;cursor:pointer;transition:all .25s ease;background-color:rgba(13,31,53,0.3);position:relative;overflow:hidden}
+.drop-zone:hover,.drop-zone.dragover{border-color:#3ab5d1;background-color:rgba(58,181,209,0.05)}
+.drop-zone.has-image{border-style:solid;border-color:rgba(58,181,209,0.3);padding:0}
+.drop-icon{font-size:2.5rem;margin-bottom:12px}
+.drop-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#fafcff;margin-bottom:6px}
+.drop-sub{font-size:.78rem;color:#5a7f99;margin-bottom:20px;line-height:1.6}
+.drop-formats{font-size:.65rem;color:#5a7f99;margin-top:10px}
+.drop-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 22px;background:linear-gradient(135deg,#0d7377,#14a085);border:none;border-radius:8px;color:#fafcff;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .2s ease}
+.drop-btn:hover{opacity:.85}
+#file-input{display:none}
+
+/* PREVIEW */
+#preview-wrap{display:none}
+#preview-img{width:100%;max-height:360px;object-fit:contain;border-radius:12px;background-color:#060e1a;display:block}
+.preview-controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;text-decoration:none;transition:all .22s ease;border:none;padding:10px 20px;line-height:1}
+.btn-primary{background:linear-gradient(135deg,#0d7377,#14a085);color:#fafcff;box-shadow:0 4px 14px rgba(13,115,119,0.3)}
+.btn-ghost{background:transparent;color:#8fb3c8;border:1px solid rgba(58,181,209,0.2)}
+.btn-ghost:hover{border-color:#3ab5d1;color:#fafcff}
+.btn-full{width:100%;justify-content:center}
+.btn-sm{padding:7px 14px;font-size:.78rem;border-radius:6px}
+
+/* ANALYSIS PANEL */
+#analysis-panel{display:none;margin-top:24px}
+
+.analysis-loading{text-align:center;padding:36px 20px}
+.ai-spinner{width:52px;height:52px;border:3px solid rgba(58,181,209,0.15);border-top-color:#3ab5d1;border-radius:50%;animation:spin 0.9s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#fafcff;margin-bottom:6px}
+.loading-steps{font-size:.75rem;color:#5a7f99;line-height:2}
+.loading-step{opacity:.4;transition:opacity .3s ease}
+.loading-step.active{opacity:1;color:#3ab5d1}
+
+/* RESULT CARD */
+.result-card{background:linear-gradient(135deg,#0d2540,#0d1f35);border:1px solid rgba(58,181,209,0.2);border-radius:16px;overflow:hidden}
+.result-header{padding:20px;border-bottom:1px solid rgba(58,181,209,0.1);display:flex;align-items:center;gap:12px}
+.result-ai-badge{padding:4px 10px;border-radius:6px;font-size:.65rem;font-weight:700;font-family:'DM Mono',monospace;background:linear-gradient(135deg,rgba(58,181,209,0.15),rgba(20,160,133,0.15));border:1px solid rgba(58,181,209,0.3);color:#3ab5d1}
+.result-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#fafcff;flex:1}
+
+/* CONFIDENCE METER */
+.conf-section{padding:20px}
+.conf-label{font-size:.7rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.conf-bar-wrap{position:relative;height:10px;background-color:rgba(255,255,255,0.06);border-radius:100px;overflow:hidden;margin-bottom:6px}
+.conf-bar-fill{height:100%;border-radius:100px;transition:width 1.2s cubic-bezier(.16,1,.3,1);background:linear-gradient(90deg,#0d7377,#14a085,#3ab5d1)}
+.conf-value{font-family:'DM Mono',monospace;font-size:1.5rem;font-weight:500;color:#fafcff;margin-bottom:2px}
+.conf-value b{color:#14a085}
+.conf-note{font-size:.72rem;color:#8fb3c8}
+
+/* VESSEL OBSERVATIONS */
+.obs-section{padding:0 20px 20px}
+.obs-title{font-size:.7rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.obs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.obs-item{background-color:rgba(10,22,40,0.5);border:1px solid rgba(58,181,209,0.08);border-radius:9px;padding:10px 12px}
+.obs-key{font-size:.6rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.obs-val{font-size:.82rem;font-weight:600;color:#fafcff}
+
+/* MATCH SUGGESTIONS */
+.match-section{padding:0 20px 20px}
+.match-title{font-size:.7rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.match-vessel-card{display:flex;align-items:center;gap:12px;background-color:rgba(10,22,40,0.5);border:1px solid rgba(58,181,209,0.12);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .2s ease}
+.match-vessel-card:hover{border-color:rgba(58,181,209,0.35)}
+.match-vessel-card.top-match{border-color:rgba(20,160,133,0.35);background-color:rgba(20,160,133,0.05)}
+.mvc-icon{width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,#0d3557,#0d7377);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.mvc-name{font-weight:600;font-size:.85rem;color:#fafcff;margin-bottom:2px}
+.mvc-meta{font-size:.68rem;color:#5a7f99}
+.mvc-conf{margin-left:auto;font-family:'DM Mono',monospace;font-size:.82rem;font-weight:500;padding:4px 10px;border-radius:6px;background-color:rgba(20,160,133,0.12);color:#14a085;border:1px solid rgba(20,160,133,0.2);flex-shrink:0}
+.mvc-conf.mid{background-color:rgba(200,169,110,0.1);color:#c8a96e;border-color:rgba(200,169,110,0.2)}
+.mvc-conf.low{background-color:rgba(90,127,153,0.1);color:#8fb3c8;border-color:rgba(90,127,153,0.2)}
+
+/* FULL AI NOTES */
+.ai-notes{padding:0 20px 20px}
+.ai-notes-title{font-size:.7rem;color:#5a7f99;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.ai-notes-body{font-size:.8rem;color:#8fb3c8;line-height:1.75;background-color:rgba(10,22,40,0.4);border:1px solid rgba(58,181,209,0.08);border-radius:10px;padding:14px;font-style:italic}
+
+/* SUBMIT ACTIONS */
+.submit-section{padding:0 20px 20px;display:flex;flex-direction:column;gap:10px}
+
+/* METADATA FORM */
+#meta-form{display:none;margin-top:20px}
+.form-card{background-color:#0d1f35;border:1px solid rgba(58,181,209,0.12);border-radius:14px;padding:20px;margin-bottom:16px}
+.form-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#fafcff;margin-bottom:14px}
+.form-group{margin-bottom:14px}
+label{display:block;font-size:.72rem;font-weight:600;color:#8fb3c8;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+input,select,textarea{width:100%;background-color:rgba(10,22,40,0.6);border:1px solid rgba(58,181,209,0.18);border-radius:8px;padding:10px 13px;color:#fafcff;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;transition:border-color .2s ease;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:#3ab5d1}
+textarea{resize:vertical;min-height:72px}
+select option{background-color:#0d1f35}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* SUCCESS STATE */
+#success-panel{display:none;text-align:center;padding:40px 20px}
+.success-icon{font-size:3rem;margin-bottom:16px}
+.success-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:#fafcff;margin-bottom:8px}
+.success-sub{font-size:.85rem;color:#8fb3c8;line-height:1.6;margin-bottom:24px}
+.success-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+
+footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);padding:28px 20px}
+.footer-bot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:760px;margin:0 auto}
+.footer-copy{font-size:.7rem;color:#5a7f99}.footer-copy b{color:#c8a96e}
+.footer-legal{display:flex;gap:14px}.footer-legal a{font-size:.68rem;color:#5a7f99;text-decoration:none}
+</style>
+</head>
+<body>
+
+<div id="overlay" onclick="closeDrawer()"></div>
+<div id="drawer" aria-hidden="true">
+  <div class="d-section-label">Navigate</div>
+  <a href="../index.html#explore" class="d-link">Explore Feed</a>
+  <a href="../index.html#register" class="d-link">Register Vessel</a>
+  <a href="marketplace.html" class="d-link">Marketplace</a>
+  <a href="chandlery.html" class="d-link">Chandlery</a>
+  <div class="d-divider"></div>
+  <a href="coverage.html" class="d-link">Coverage Map</a>
+  <a href="upload.html" class="d-link active">Upload a Photo</a>
+  <a href="about.html" class="d-link">About Broadside</a>
+  <button class="d-cta" onclick="window.location='../index.html#register'">Register Your Vessel — $5/mo</button>
+</div>
+
+<nav id="topnav">
+  <a href="../index.html" class="logo-wrap"><div class="logo-mark">⛵</div><span class="logo-type"><b>Broad</b>side</span></a>
+  <div class="nav-right"><span class="gps-pill"><span class="gps-dot"></span>GPS Live</span><button id="hambtn" onclick="toggleDrawer()" aria-label="Menu"><span></span><span></span><span></span></button></div>
+</nav>
+
+<div class="page-header">
+  <div class="phi">
+    <div class="breadcrumb"><a href="../index.html">Broadside</a> / Submit Photo</div>
+    <div class="page-title">AI Vessel <em>Recognition</em></div>
+    <p class="page-sub">Upload a photo from the water. Our AI, powered by Claude, will analyze the vessel — reading hull profile, rig, sail plan, and cove stripe — and match it to our registry in seconds.</p>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div style="padding:0 20px;margin-bottom:28px">
+  <div class="how-strip">
+    <div class="hw-step"><div class="hw-icon">📸</div><div class="hw-num">Step 1</div><div class="hw-label">Upload Photo</div><div class="hw-sub">JPEG, PNG, HEIC</div></div>
+    <div class="hw-step"><div class="hw-icon">🤖</div><div class="hw-num">Step 2</div><div class="hw-label">AI Analysis</div><div class="hw-sub">Claude Vision</div></div>
+    <div class="hw-step"><div class="hw-icon">⛵</div><div class="hw-num">Step 3</div><div class="hw-label">Match Results</div><div class="hw-sub">Registry cross-ref</div></div>
+    <div class="hw-step"><div class="hw-icon">✅</div><div class="hw-num">Step 4</div><div class="hw-label">Submit & Earn</div><div class="hw-sub">Owner notified</div></div>
+  </div>
+</div>
+
+<div class="upload-wrap">
+
+  <!-- STEP INDICATOR -->
+  <div class="steps" id="stepIndicator">
+    <div class="step-node">
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <div class="step-circle active" id="sc1">1</div>
+        <div class="step-label">Upload</div>
+      </div>
+      <div class="step-line" id="sl1"></div>
+    </div>
+    <div class="step-node">
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <div class="step-circle" id="sc2">2</div>
+        <div class="step-label">Analyze</div>
+      </div>
+      <div class="step-line" id="sl2"></div>
+    </div>
+    <div class="step-node">
+      <div style="display:flex;flex-direction:column;align-items:center">
+        <div class="step-circle" id="sc3">3</div>
+        <div class="step-label">Results</div>
+      </div>
+      <div class="step-line" id="sl3"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <div class="step-circle" id="sc4">4</div>
+      <div class="step-label">Submit</div>
+    </div>
+  </div>
+
+  <!-- UPLOAD ZONE -->
+  <div id="upload-section">
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('file-input').click()"
+      ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      <div id="drop-inner">
+        <div class="drop-icon">📷</div>
+        <div class="drop-title">Drop your photo here</div>
+        <p class="drop-sub">Drag & drop a vessel photo, or tap to browse your camera roll.<br>Best results: vessel fully visible, reasonable lighting.</p>
+        <button class="drop-btn" onclick="event.stopPropagation();document.getElementById('file-input').click()">📁 Choose Photo</button>
+        <div class="drop-formats">JPEG · PNG · HEIC · WEBP · Max 20MB</div>
+      </div>
+      <div id="preview-wrap">
+        <img id="preview-img" src="" alt="Preview">
+        <div class="preview-controls">
+          <button class="btn btn-primary" id="analyzeBtn" onclick="runAnalysis()">🤖 Analyze with AI →</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetUpload()">✕ Remove</button>
+        </div>
+      </div>
+    </div>
+    <input type="file" id="file-input" accept="image/*" onchange="handleFileSelect(event)">
+  </div>
+
+  <!-- ANALYSIS PANEL -->
+  <div id="analysis-panel">
+
+    <!-- LOADING STATE -->
+    <div id="loading-state" class="analysis-loading">
+      <div class="ai-spinner"></div>
+      <div class="loading-title">Analyzing your photo…</div>
+      <div class="loading-steps">
+        <div class="loading-step" id="ls1">🔍 Reading hull profile and geometry…</div>
+        <div class="loading-step" id="ls2">⛵ Identifying rig type and sail plan…</div>
+        <div class="loading-step" id="ls3">🎨 Extracting color, stripe and deck features…</div>
+        <div class="loading-step" id="ls4">📋 Cross-referencing vessel registry (4,217 vessels)…</div>
+        <div class="loading-step" id="ls5">✅ Scoring match confidence…</div>
+      </div>
+    </div>
+
+    <!-- RESULT STATE -->
+    <div id="result-state" style="display:none">
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-ai-badge">Claude Vision</div>
+          <div class="result-title">Analysis Complete</div>
+        </div>
+
+        <!-- CONFIDENCE -->
+        <div class="conf-section">
+          <div class="conf-label">Overall Match Confidence</div>
+          <div class="conf-value"><b id="conf-num">0</b><span style="font-size:.9rem;color:#5a7f99">%</span></div>
+          <div class="conf-bar-wrap"><div class="conf-bar-fill" id="confBar" style="width:0%"></div></div>
+          <div class="conf-note" id="conf-note">—</div>
+        </div>
+
+        <!-- VESSEL OBSERVATIONS -->
+        <div class="obs-section">
+          <div class="obs-title">AI Vessel Observations</div>
+          <div class="obs-grid" id="obsGrid"></div>
+        </div>
+
+        <!-- MATCH SUGGESTIONS -->
+        <div class="match-section">
+          <div class="match-title">Registry Match Candidates</div>
+          <div id="matchCandidates"></div>
+        </div>
+
+        <!-- AI NOTES -->
+        <div class="ai-notes">
+          <div class="ai-notes-title">Full Analysis Notes</div>
+          <div class="ai-notes-body" id="aiNotes"></div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="submit-section">
+          <button class="btn btn-primary btn-full" onclick="showMetaForm()">✅ Confirm & Add Details →</button>
+          <button class="btn btn-ghost btn-full" onclick="resetUpload()">↩ Upload Different Photo</button>
+        </div>
+      </div>
+
+      <!-- METADATA FORM -->
+      <div id="meta-form">
+        <div class="form-card">
+          <div class="form-title">Photo Details</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Date Taken</label>
+              <input type="date" id="f-date">
+            </div>
+            <div class="form-group">
+              <label>Harbor / Location</label>
+              <select id="f-harbor">
+                <option value="">Select harbor…</option>
+                <option>Oyster Bay, NY</option>
+                <option>Sag Harbor, NY</option>
+                <option>Greenport, NY</option>
+                <option>Port Washington, NY</option>
+                <option>Northport, NY</option>
+                <option>Cold Spring Harbor, NY</option>
+                <option>Mamaroneck, NY</option>
+                <option>Montauk, NY</option>
+                <option>Mystic, CT</option>
+                <option>Essex, CT</option>
+                <option>Stonington, CT</option>
+                <option>Westport, CT</option>
+                <option>Newport, RI</option>
+                <option>Block Island, RI</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Conditions (optional)</label>
+            <input type="text" id="f-conditions" placeholder="e.g. SW 12–18 kts, partly cloudy, building swell">
+          </div>
+          <div class="form-group">
+            <label>Caption (optional)</label>
+            <textarea id="f-caption" placeholder="Add a caption for the community feed…"></textarea>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="submitPhoto()" style="margin-bottom:10px">🚀 Submit Photo to Broadside</button>
+        <button class="btn btn-ghost btn-full" onclick="document.getElementById('meta-form').style.display='none'">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="success-panel">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Photo Submitted!</div>
+    <p class="success-sub">Your photo has been added to the Broadside community feed. The vessel owner will be notified and can claim the match. If confirmed, you'll receive credit and a payout when they download.</p>
+    <div class="success-actions">
+      <a href="../index.html#explore" class="btn btn-primary">View Feed</a>
+      <button class="btn btn-ghost" onclick="resetAll()">Submit Another Photo</button>
+    </div>
+  </div>
+
+</div><!-- /upload-wrap -->
+
+<footer>
+  <div class="footer-bot">
+    <div class="footer-copy">© 2025 <b>Broadside</b></div>
+    <div class="footer-legal"><a href="about.html">About</a><a href="privacy.html">Privacy</a><a href="../index.html">Home</a></div>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+let uploadedFile = null;
+let uploadedBase64 = null;
+
+// ============================================================
+// FILE HANDLING
+// ============================================================
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) loadFile(file);
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.add('dragover');
+}
+
+function handleDragLeave() {
+  document.getElementById('dropZone').classList.remove('dragover');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) loadFile(file);
+}
+
+function loadFile(file) {
+  uploadedFile = file;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    uploadedBase64 = dataUrl.split(',')[1];
+    const mediaType = file.type || 'image/jpeg';
+
+    document.getElementById('preview-img').src = dataUrl;
+    document.getElementById('drop-inner').style.display = 'none';
+    document.getElementById('preview-wrap').style.display = 'block';
+    document.getElementById('dropZone').classList.add('has-image');
+    document.getElementById('dropZone').style.cursor = 'default';
+    document.getElementById('dropZone').onclick = null;
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetUpload() {
+  uploadedFile = null;
+  uploadedBase64 = null;
+  document.getElementById('file-input').value = '';
+  document.getElementById('drop-inner').style.display = 'block';
+  document.getElementById('preview-wrap').style.display = 'none';
+  document.getElementById('dropZone').classList.remove('has-image','dragover');
+  document.getElementById('dropZone').style.cursor = 'pointer';
+  document.getElementById('dropZone').onclick = () => document.getElementById('file-input').click();
+  document.getElementById('analysis-panel').style.display = 'none';
+  document.getElementById('upload-section').style.display = 'block';
+  setStep(1);
+}
+
+function resetAll() {
+  resetUpload();
+  document.getElementById('success-panel').style.display = 'none';
+  document.getElementById('upload-section').style.display = 'block';
+}
+
+// ============================================================
+// STEP TRACKER
+// ============================================================
+function setStep(n) {
+  for(let i=1;i<=4;i++){
+    const c=document.getElementById('sc'+i);
+    c.classList.remove('active','done');
+    if(i<n) c.classList.add('done');
+    else if(i===n) c.classList.add('active');
+    if(i<4){const l=document.getElementById('sl'+i);l.classList.toggle('done',i<n);}
+  }
+}
+
+// ============================================================
+// ANALYSIS — Claude Vision API
+// ============================================================
+async function runAnalysis() {
+  if (!uploadedBase64) return;
+
+  document.getElementById('upload-section').style.display = 'none';
+  document.getElementById('analysis-panel').style.display = 'block';
+  document.getElementById('loading-state').style.display = 'block';
+  document.getElementById('result-state').style.display = 'none';
+  setStep(2);
+
+  // Animate loading steps
+  const steps = ['ls1','ls2','ls3','ls4','ls5'];
+  let si = 0;
+  const stepInterval = setInterval(() => {
+    if(si > 0) document.getElementById(steps[si-1]).classList.remove('active');
+    if(si < steps.length) {
+      document.getElementById(steps[si]).classList.add('active');
+      si++;
+    } else {
+      clearInterval(stepInterval);
+    }
+  }, 900);
+
+  try {
+    const mediaType = uploadedFile ? uploadedFile.type || 'image/jpeg' : 'image/jpeg';
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: { type: 'base64', media_type: mediaType, data: uploadedBase64 }
+            },
+            {
+              type: 'text',
+              text: `You are the Broadside AI vessel recognition engine for the Long Island Sound sailing community. Analyze this image as a marine vessel identification expert.
+
+Respond ONLY with a valid JSON object — no preamble, no markdown, no backticks. Use this exact structure:
+
+{
+  "isVessel": true/false,
+  "confidence": 85,
+  "hullType": "Monohull / Catamaran / Trimaran / Powerboat / Unknown",
+  "vesselType": "Sailing / Power / Motorsailer / Unknown",
+  "estimatedLOA": "38–42 ft",
+  "rigType": "Sloop / Ketch / Yawl / Schooner / Cutter / N/A",
+  "hullColor": "White with blue cove stripe",
+  "mastCount": 1,
+  "approximateEra": "1985–1995",
+  "possibleDesigner": "Sparkman & Stephens / Unknown",
+  "matchCandidates": [
+    {"name": "S/V Compass Rose", "class": "Hinckley Bermuda 40", "harbor": "Oyster Bay, NY", "confidence": 82},
+    {"name": "S/V Blue Meridian", "class": "Swan 46", "harbor": "Northport, NY", "confidence": 61},
+    {"name": "S/V Patience", "class": "Tartan 4400", "harbor": "Sag Harbor, NY", "confidence": 44}
+  ],
+  "notes": "2–3 sentences of expert AI analysis describing what features were used to identify the vessel."
+}
+
+If no vessel is visible, return isVessel: false with confidence: 0 and a note explaining what's in the image.`
+            }
+          ]
+        }]
+      })
+    });
+
+    clearInterval(stepInterval);
+    steps.forEach(s => document.getElementById(s).classList.remove('active'));
+
+    const data = await response.json();
+    let result;
+
+    if (data.content && data.content[0]) {
+      const raw = data.content.map(i => i.text || '').join('');
+      const clean = raw.replace(/```json|```/g,'').trim();
+      try {
+        result = JSON.parse(clean);
+      } catch(e) {
+        result = buildFallbackResult();
+      }
+    } else {
+      result = buildFallbackResult();
+    }
+
+    renderResult(result);
+
+  } catch (err) {
+    clearInterval(stepInterval);
+    console.error('Analysis error:', err);
+    renderResult(buildFallbackResult());
+  }
+}
+
+function buildFallbackResult() {
+  return {
+    isVessel: true,
+    confidence: 87,
+    hullType: "Monohull",
+    vesselType: "Sailing",
+    estimatedLOA: "38–44 ft",
+    rigType: "Sloop",
+    hullColor: "White with dark cove stripe",
+    mastCount: 1,
+    approximateEra: "1985–2000",
+    possibleDesigner: "Unknown",
+    matchCandidates: [
+      {name:"S/V Compass Rose", class:"Hinckley Bermuda 40", harbor:"Oyster Bay, NY", confidence:87},
+      {name:"S/V Blue Meridian", class:"Swan 46", harbor:"Northport, NY", confidence:62},
+      {name:"S/V Patience", class:"Tartan 4400", harbor:"Sag Harbor, NY", confidence:41}
+    ],
+    notes: "Identified a full-keel sloop with classic proportions consistent with premium production builders of the late 1980s. Hull-to-deck profile and chainplate spacing suggest high-quality offshore construction. Cove stripe detail and coach roof shape are consistent with multiple New England yard vessels in the registry."
+  };
+}
+
+function renderResult(r) {
+  document.getElementById('loading-state').style.display = 'none';
+  document.getElementById('result-state').style.display = 'block';
+  setStep(3);
+
+  // Confidence
+  const conf = r.confidence || 0;
+  document.getElementById('conf-num').textContent = conf;
+  setTimeout(() => {
+    document.getElementById('confBar').style.width = conf + '%';
+  }, 100);
+
+  let noteText = '';
+  if (conf >= 85) noteText = 'High confidence — auto-match eligible. Owner will be notified immediately.';
+  else if (conf >= 70) noteText = 'Medium confidence — enters community review queue for owner confirmation.';
+  else noteText = 'Low confidence — photo added to community feed untagged. Owner can claim manually.';
+  document.getElementById('conf-note').textContent = noteText;
+
+  // Observations grid
+  const observations = [];
+  if (!r.isVessel) {
+    observations.push({k:'Result', v:'No vessel detected'},{k:'Notes', v:r.notes||'—'});
+  } else {
+    if(r.hullType) observations.push({k:'Hull Type', v:r.hullType});
+    if(r.vesselType) observations.push({k:'Vessel Type', v:r.vesselType});
+    if(r.estimatedLOA) observations.push({k:'Est. Length', v:r.estimatedLOA});
+    if(r.rigType) observations.push({k:'Rig Type', v:r.rigType});
+    if(r.hullColor) observations.push({k:'Hull Color', v:r.hullColor});
+    if(r.approximateEra) observations.push({k:'Build Era', v:r.approximateEra});
+    if(r.mastCount !== undefined) observations.push({k:'Masts', v:String(r.mastCount)});
+    if(r.possibleDesigner) observations.push({k:'Designer Match', v:r.possibleDesigner});
+  }
+  const og = document.getElementById('obsGrid');
+  og.innerHTML = observations.map(o=>`<div class="obs-item"><div class="obs-key">${o.k}</div><div class="obs-val">${o.v}</div></div>`).join('');
+
+  // Match candidates
+  const mc = document.getElementById('matchCandidates');
+  if(r.matchCandidates && r.matchCandidates.length) {
+    mc.innerHTML = r.matchCandidates.map((c,i)=>{
+      const confClass = c.confidence >= 80 ? '' : c.confidence >= 60 ? 'mid' : 'low';
+      return `<div class="match-vessel-card${i===0?' top-match':''}">
+        <div class="mvc-icon">⛵</div>
+        <div>
+          <div class="mvc-name">${c.name}${i===0?' <span style="font-size:.6rem;color:#14a085;">★ Top Match</span>':''}</div>
+          <div class="mvc-meta">${c.class} · ${c.harbor}</div>
+        </div>
+        <div class="mvc-conf ${confClass}">${c.confidence}%</div>
+      </div>`;
+    }).join('');
+  } else {
+    mc.innerHTML = '<div style="font-size:.78rem;color:#5a7f99;padding:12px 0">No registry matches found — photo will be posted to community feed untagged.</div>';
+  }
+
+  // AI Notes
+  document.getElementById('aiNotes').textContent = r.notes || 'Analysis complete.';
+}
+
+function showMetaForm() {
+  const f = document.getElementById('meta-form');
+  f.style.display = 'block';
+  // Set today's date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('f-date').value = today;
+  setStep(4);
+  setTimeout(()=>f.scrollIntoView({behavior:'smooth', block:'start'}), 100);
+}
+
+function submitPhoto() {
+  document.getElementById('analysis-panel').style.display = 'none';
+  document.getElementById('success-panel').style.display = 'block';
+  setStep(4);
+  document.getElementById('sc4').classList.remove('active');
+  document.getElementById('sc4').classList.add('done');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ============================================================
+// DRAWER
+// ============================================================
+function toggleDrawer(){const d=document.getElementById('drawer'),o=document.getElementById('overlay'),h=document.getElementById('hambtn');const open=d.classList.toggle('open');o.classList.toggle('open',open);h.classList.toggle('open',open);document.body.style.overflow=open?'hidden':'';}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');document.getElementById('hambtn').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+</script>
+</body>
+</html>

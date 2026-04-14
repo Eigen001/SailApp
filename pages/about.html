@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>About Broadside</title>
+<title>About SailSnap</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}body{font-family:'DM Sans',-apple-system,sans-serif;background-color:#060e1a;color:#eef2f6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 #topnav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:56px;background-color:rgba(6,14,26,0.93);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(58,181,209,0.12)}
-.logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}.logo-mark{width:30px;height:30px;border:1px solid rgba(58,181,209,0.3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background-color:rgba(58,181,209,0.08)}.logo-type{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fafcff;letter-spacing:-.02em;line-height:1}.logo-type b{color:#3ab5d1}
+.logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}.logo-mark{width:30px;height:30px;display:flex;align-items:center;justify-content:center;}.logo-type{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fafcff;letter-spacing:-.02em;line-height:1}.logo-type b{color:#3ab5d1}
 .nav-right{display:flex;align-items:center;gap:10px}.gps-pill{display:flex;align-items:center;gap:5px;background-color:rgba(20,160,133,0.12);border:1px solid rgba(20,160,133,0.28);border-radius:100px;padding:5px 10px;font-size:.68rem;font-weight:600;color:#14a085}.gps-dot{width:5px;height:5px;border-radius:50%;background-color:#14a085;animation:gpsblink 1.8s ease-in-out infinite}@keyframes gpsblink{0%,100%{opacity:1}50%{opacity:.25}}
 #hambtn{width:34px;height:34px;background:transparent;border:1px solid rgba(58,181,209,0.18);border-radius:7px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}#hambtn span{display:block;height:1px;background-color:#8fb3c8;border-radius:1px;transition:all .25s ease;transform-origin:center}#hambtn span:nth-child(1){width:14px}#hambtn span:nth-child(2){width:20px}#hambtn span:nth-child(3){width:14px}#hambtn.open span:nth-child(1){width:18px;transform:rotate(45deg) translate(3px,3px);background-color:#fafcff}#hambtn.open span:nth-child(2){opacity:0}#hambtn.open span:nth-child(3){width:18px;transform:rotate(-45deg) translate(3px,-3px);background-color:#fafcff}
 #overlay{position:fixed;inset:0;background-color:rgba(0,0,0,0.55);z-index:800;opacity:0;pointer-events:none;transition:opacity .28s ease}#overlay.open{opacity:1;pointer-events:all}
@@ -60,90 +59,88 @@ footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);paddin
 <div id="overlay" onclick="closeDrawer()"></div>
 <div id="drawer" aria-hidden="true">
   <div class="d-section-label">Navigate</div>
-  <a href="../broadside.html#explore" class="d-link">Explore Feed</a>
-  <a href="../broadside.html#register" class="d-link">Register Vessel</a>
+  <a href="../index.html#explore" class="d-link">Explore Feed</a>
+  <a href="../index.html#register" class="d-link">Register Vessel</a>
   <a href="marketplace.html" class="d-link">Marketplace</a>
   <a href="chandlery.html" class="d-link">Chandlery</a>
-  <a href="../broadside.html#pricing" class="d-link">Pricing</a>
+  <a href="../index.html#pricing" class="d-link">Pricing</a>
   <div class="d-divider"></div>
   <a href="coverage.html" class="d-link">Coverage Map</a>
   <a href="advertise.html" class="d-link">Advertise</a>
-  <a href="about.html" class="d-link active">About Broadside</a>
-  <button class="d-cta" onclick="window.location='../broadside.html#register'">Register Your Vessel — $5/mo</button>
+  <a href="about.html" class="d-link active">About SailSnap</a>
+  <button class="d-cta" onclick="window.location='../index.html#register'">Register Your Vessel — $5/mo</button>
 </div>
 <nav id="topnav">
-  <a href="../broadside.html" class="logo-wrap"><div class="logo-mark">⛵</div><span class="logo-type"><b>Broad</b>side</span></a>
+  <a href="../index.html" class="logo-wrap"><div class="logo-mark" style="padding:0;overflow:visible;background:transparent;border:none;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" width="30" height="30"><circle cx="16" cy="16" r="13" stroke="#3ab5d1" stroke-width="1.5" fill="rgba(58,181,209,0.06)"/><circle cx="16" cy="16" r="10" stroke="rgba(58,181,209,0.3)" stroke-width="0.75" fill="none"/><path d="M9 20.5 Q16 22.5 23 20.5 L21.5 22 Q16 23.5 10.5 22 Z" fill="#3ab5d1" opacity="0.9"/><line x1="16" y1="10" x2="16" y2="21" stroke="#fafcff" stroke-width="1.2" stroke-linecap="round"/><path d="M16 10.5 L22 19.5 L16 20.5 Z" fill="#fafcff" opacity="0.92"/><path d="M16 13 L11 20 L16 20.5 Z" fill="rgba(250,252,255,0.55)"/><path d="M8 22.5 Q12 21.8 16 22.5 Q20 23.2 24 22.5" stroke="#3ab5d1" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.5"/><circle cx="21" cy="11" r="1.2" fill="rgba(58,181,209,0.35)"/></svg></div><span class="logo-type"><b>Sail</b>Snap</span></a>
   <div class="nav-right"><span class="gps-pill"><span class="gps-dot"></span>GPS Live</span><button id="hambtn" onclick="toggleDrawer()" aria-label="Menu"><span></span><span></span><span></span></button></div>
 </nav>
 
 <div class="page-header">
   <div class="wrap page-header-inner">
-    <div class="breadcrumb"><a href="../broadside.html">Broadside</a> / About</div>
+    <div class="breadcrumb"><a href="../index.html">SailSnap</a> / About</div>
     <div class="page-title">Built by sailors,<br><em>for sailors.</em></div>
-    <p class="page-sub">Broadside started with a simple frustration: you can never get a good photo of your own boat. We built the tool we always wanted.</p>
+    <p class="page-sub">SailSnap started with a simple frustration: you can never get a good photo of your own boat. We built the tool we always wanted.</p>
   </div>
 </div>
 
 <div class="content">
   <div class="wrap">
 
-```
-<div class="story-block">
-  <div class="story-lbl">The Origin</div>
-  <div class="story-title">A photo problem <em>every sailor has</em></div>
-  <div class="story-body">
-    <p>You're heeling hard at 18 degrees, spray coming over the bow, sails perfectly trimmed for the first time all season — and there's nobody to photograph it. Your phone is in a dry bag. The only camera is yours, pointed at the wrong thing.</p>
-    <p>Meanwhile, the Oyster 53 that just ghosted past you at 8 knots? Her captain got a stunning frame of your boat, perfectly lit, under full sail. He doesn't know who you are. You'll never see that photo.</p>
-    <p>Broadside fixes that. Every photo taken of every vessel, automatically matched and delivered to the right owner. The community photographs each other, and everyone wins.</p>
-    <p>We launched on Long Island Sound in the spring of 2024 with 40 vessels. We're now at 4,200+ — and growing across New England, the Chesapeake, and the Great Lakes.</p>
-  </div>
-</div>
+    <div class="story-block">
+      <div class="story-lbl">The Origin</div>
+      <div class="story-title">A photo problem <em>every sailor has</em></div>
+      <div class="story-body">
+        <p>You're heeling hard at 18 degrees, spray coming over the bow, sails perfectly trimmed for the first time all season — and there's nobody to photograph it. Your phone is in a dry bag. The only camera is yours, pointed at the wrong thing.</p>
+        <p>Meanwhile, the Oyster 53 that just ghosted past you at 8 knots? Her captain got a stunning frame of your boat, perfectly lit, under full sail. He doesn't know who you are. You'll never see that photo.</p>
+        <p>SailSnap fixes that. Every photo taken of every vessel, automatically matched and delivered to the right owner. The community photographs each other, and everyone wins.</p>
+        <p>We launched on Long Island Sound in the spring of 2024 with 40 vessels. We're now at 4,200+ — and growing across New England, the Chesapeake, and the Great Lakes.</p>
+      </div>
+    </div>
 
-<div class="stats-row">
-  <div class="stat-box"><div class="stat-num">4,<b>217</b></div><div class="stat-lbl">Vessels</div></div>
-  <div class="stat-box"><div class="stat-num" style="color:#14a085;">92K</div><div class="stat-lbl">Photos Matched</div></div>
-  <div class="stat-box"><div class="stat-num" style="color:#c8a96e;">31</div><div class="stat-lbl">Harbors</div></div>
-  <div class="stat-box"><div class="stat-num">98<b>%</b></div><div class="stat-lbl">Match Accuracy</div></div>
-</div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-num">4,<b>217</b></div><div class="stat-lbl">Vessels</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:#14a085;">92K</div><div class="stat-lbl">Photos Matched</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:#c8a96e;">31</div><div class="stat-lbl">Harbors</div></div>
+      <div class="stat-box"><div class="stat-num">98<b>%</b></div><div class="stat-lbl">Match Accuracy</div></div>
+    </div>
 
-<div class="divider"></div>
+    <div class="divider"></div>
 
-<div class="story-block">
-  <div class="story-lbl">The Technology</div>
-  <div class="story-title">AI that understands <em>boats</em></div>
-  <div class="story-body">
-    <p>Our computer vision model was trained specifically on maritime vessels — not repurposed from face recognition or car identification. It understands hull profiles, sail configurations, rigging layouts, cove stripes, and registration numbers at oblique angles from moving platforms.</p>
-    <p>When a match exceeds 85% confidence, it's delivered automatically. Between 70–85%, it enters a community-assisted review queue where registered vessel owners can confirm or reject. Below 70%, it stays in the community feed untagged — still visible, still shareable.</p>
-    <p>We sync with AIS transponder data through the MMSI registry, which means we know where registered vessels are in real time and can cross-reference GPS position with photo metadata to dramatically improve match confidence.</p>
-  </div>
-</div>
+    <div class="story-block">
+      <div class="story-lbl">The Technology</div>
+      <div class="story-title">AI that understands <em>boats</em></div>
+      <div class="story-body">
+        <p>Our computer vision model was trained specifically on maritime vessels — not repurposed from face recognition or car identification. It understands hull profiles, sail configurations, rigging layouts, cove stripes, and registration numbers at oblique angles from moving platforms.</p>
+        <p>When a match exceeds 85% confidence, it's delivered automatically. Between 70–85%, it enters a community-assisted review queue where registered vessel owners can confirm or reject. Below 70%, it stays in the community feed untagged — still visible, still shareable.</p>
+        <p>We sync with AIS transponder data through the MMSI registry, which means we know where registered vessels are in real time and can cross-reference GPS position with photo metadata to dramatically improve match confidence.</p>
+      </div>
+    </div>
 
-<div class="divider"></div>
+    <div class="divider"></div>
 
-<div class="story-block">
-  <div class="story-lbl">Our Values</div>
-  <div class="story-title">What we <em>believe</em></div>
-  <div class="values-grid">
-    <div class="val-card"><div class="val-icon">⛵</div><div class="val-title">Community First</div><div class="val-desc">The platform only works when sailors photograph each other. We're designed to reward the photographer as much as the vessel owner.</div></div>
-    <div class="val-card"><div class="val-icon">🔒</div><div class="val-title">Privacy by Design</div><div class="val-desc">Vessel owners control their profiles. GPS data is never shared publicly. You decide what your vessel page shows.</div></div>
-    <div class="val-card"><div class="val-icon">🧭</div><div class="val-title">Accurate Data Only</div><div class="val-desc">We require USCG documentation and MMSI verification. No fake vessels, no spam accounts. Every registered boat is a real boat.</div></div>
-    <div class="val-card"><div class="val-icon">🌊</div><div class="val-title">Long Island Sound First</div><div class="val-desc">We started here. We know this water. Our coverage, harbor ratings and route data reflect the local knowledge of the community that built this.</div></div>
-  </div>
-</div>
+    <div class="story-block">
+      <div class="story-lbl">Our Values</div>
+      <div class="story-title">What we <em>believe</em></div>
+      <div class="values-grid">
+        <div class="val-card"><div class="val-icon">⛵</div><div class="val-title">Community First</div><div class="val-desc">The platform only works when sailors photograph each other. We're designed to reward the photographer as much as the vessel owner.</div></div>
+        <div class="val-card"><div class="val-icon">🔒</div><div class="val-title">Privacy by Design</div><div class="val-desc">Vessel owners control their profiles. GPS data is never shared publicly. You decide what your vessel page shows.</div></div>
+        <div class="val-card"><div class="val-icon">🧭</div><div class="val-title">Accurate Data Only</div><div class="val-desc">We require USCG documentation and MMSI verification. No fake vessels, no spam accounts. Every registered boat is a real boat.</div></div>
+        <div class="val-card"><div class="val-icon">🌊</div><div class="val-title">Long Island Sound First</div><div class="val-desc">We started here. We know this water. Our coverage, harbor ratings and route data reflect the local knowledge of the community that built this.</div></div>
+      </div>
+    </div>
 
-<div class="divider"></div>
+    <div class="divider"></div>
 
-<div class="story-block">
-  <div class="story-lbl">The Team</div>
-  <div class="story-title">Who built <em>Broadside</em></div>
-  <div class="team-grid">
-    <div class="team-card"><div class="team-avatar">⛵</div><div><div class="team-name">James Whitfield</div><div class="team-title">Co-Founder & CEO</div><div class="team-bio">Oyster Bay native. Sailed since age 8. Former software engineer at maritime navigation company. Sails a Hinckley Bermuda 40 named Compass Rose.</div></div></div>
-    <div class="team-card"><div class="team-avatar">🤖</div><div><div class="team-name">Dr. Priya Nair</div><div class="team-title">Co-Founder & CTO</div><div class="team-bio">PhD Computer Vision, Cornell. Competitive sailor with a J/35. Designed the vessel identification model from scratch using maritime-specific training data.</div></div></div>
-    <div class="team-card"><div class="team-avatar">📸</div><div><div class="team-name">Tom Cavanaugh</div><div class="team-title">Head of Community</div><div class="team-bio">Former marine photographer for Sailing World magazine. Has sailed the Sound for 30 years. Runs the Broadside photography guidelines and moderation program.</div></div></div>
-    <div class="team-card"><div class="team-avatar">🗺️</div><div><div class="team-name">Sara Lindqvist</div><div class="team-title">Head of Product</div><div class="team-bio">Product designer with a background in maritime safety software. Mystic, CT. Sails a Cape Dory 36 and designed the Voyage Log feature.</div></div></div>
-  </div>
-</div>
-```
+    <div class="story-block">
+      <div class="story-lbl">The Team</div>
+      <div class="story-title">Who built <em>SailSnap</em></div>
+      <div class="team-grid">
+        <div class="team-card"><div class="team-avatar">⛵</div><div><div class="team-name">James Whitfield</div><div class="team-title">Co-Founder & CEO</div><div class="team-bio">Oyster Bay native. Sailed since age 8. Former software engineer at maritime navigation company. Sails a Hinckley Bermuda 40 named Compass Rose.</div></div></div>
+        <div class="team-card"><div class="team-avatar">🤖</div><div><div class="team-name">Dr. Priya Nair</div><div class="team-title">Co-Founder & CTO</div><div class="team-bio">PhD Computer Vision, Cornell. Competitive sailor with a J/35. Designed the vessel identification model from scratch using maritime-specific training data.</div></div></div>
+        <div class="team-card"><div class="team-avatar">📸</div><div><div class="team-name">Tom Cavanaugh</div><div class="team-title">Head of Community</div><div class="team-bio">Former marine photographer for Sailing World magazine. Has sailed the Sound for 30 years. Runs the SailSnap photography guidelines and moderation program.</div></div></div>
+        <div class="team-card"><div class="team-avatar">🗺️</div><div><div class="team-name">Sara Lindqvist</div><div class="team-title">Head of Product</div><div class="team-bio">Product designer with a background in maritime safety software. Mystic, CT. Sails a Cape Dory 36 and designed the Voyage Log feature.</div></div></div>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -152,15 +149,15 @@ footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);paddin
   <div class="cta-title">Ready to get started?</div>
   <p class="cta-sub">Register your vessel and let the community start building your photo archive. First month free.</p>
   <div class="cta-btns">
-    <a href="../broadside.html#register" class="btn btn-primary btn-lg">Register Your Vessel</a>
+    <a href="../index.html#register" class="btn btn-primary btn-lg">Register Your Vessel</a>
     <a href="contact.html" class="btn btn-ghost btn-lg">Get in Touch</a>
   </div>
 </div>
 
 <footer>
   <div class="footer-bot" style="max-width:760px;margin:0 auto;">
-    <div class="footer-copy">© 2025 <b>Broadside</b></div>
-    <div class="footer-legal"><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="../broadside.html">Home</a></div>
+    <div class="footer-copy">© 2025 <b>SailSnap</b></div>
+    <div class="footer-legal"><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="../index.html">Home</a></div>
   </div>
 </footer>
 
@@ -169,6 +166,5 @@ function toggleDrawer(){const d=document.getElementById('drawer'),o=document.get
 function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').classList.remove('open');document.getElementById('hambtn').classList.remove('open');document.body.style.overflow='';}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
 </script>
-
 </body>
 </html>

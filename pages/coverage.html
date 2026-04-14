@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Coverage Map — Broadside</title>
+<title>Coverage Map — SailSnap</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -13,7 +13,7 @@ html{scroll-behavior:smooth}
 body{font-family:'DM Sans',-apple-system,sans-serif;background-color:#060e1a;color:#eef2f6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 #topnav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:56px;background-color:rgba(6,14,26,0.93);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(58,181,209,0.12)}
 .logo-wrap{display:flex;align-items:center;gap:8px;text-decoration:none}
-.logo-mark{width:30px;height:30px;border:1px solid rgba(58,181,209,0.3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background-color:rgba(58,181,209,0.08)}
+.logo-mark{width:30px;height:30px;display:flex;align-items:center;justify-content:center;}
 .logo-type{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:#fafcff;letter-spacing:-.02em;line-height:1}
 .logo-type b{color:#3ab5d1}
 .nav-right{display:flex;align-items:center;gap:10px}
@@ -97,23 +97,23 @@ footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);paddin
 <div id="overlay" onclick="closeDrawer()"></div>
 <div id="drawer" aria-hidden="true">
   <div class="d-section-label">Navigate</div>
-  <a href="broadside.html#explore" class="d-link">Explore Feed</a>
-  <a href="broadside.html#register" class="d-link">Register Vessel</a>
+  <a href="index.html#explore" class="d-link">Explore Feed</a>
+  <a href="index.html#register" class="d-link">Register Vessel</a>
   <a href="pages/marketplace.html" class="d-link">Marketplace</a>
   <a href="pages/chandlery.html" class="d-link">Chandlery</a>
-  <a href="broadside.html#pricing" class="d-link">Pricing</a>
+  <a href="index.html#pricing" class="d-link">Pricing</a>
   <div class="d-divider"></div>
   <div class="d-section-label">More</div>
   <a href="pages/coverage.html" class="d-link active">Coverage Map</a>
   <a href="pages/advertise.html" class="d-link">Advertise</a>
-  <a href="pages/about.html" class="d-link">About Broadside</a>
-  <button class="d-cta" onclick="window.location='broadside.html#register'">Register Your Vessel — $5/mo</button>
+  <a href="pages/about.html" class="d-link">About SailSnap</a>
+  <button class="d-cta" onclick="window.location='index.html#register'">Register Your Vessel — $5/mo</button>
 </div>
 
 <nav id="topnav">
-  <a href="broadside.html" class="logo-wrap">
-    <div class="logo-mark">⛵</div>
-    <span class="logo-type"><b>Broad</b>side</span>
+  <a href="index.html" class="logo-wrap">
+    <div class="logo-mark" style="padding:0;overflow:visible;background:transparent;border:none;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" width="30" height="30"><circle cx="16" cy="16" r="13" stroke="#3ab5d1" stroke-width="1.5" fill="rgba(58,181,209,0.06)"/><circle cx="16" cy="16" r="10" stroke="rgba(58,181,209,0.3)" stroke-width="0.75" fill="none"/><path d="M9 20.5 Q16 22.5 23 20.5 L21.5 22 Q16 23.5 10.5 22 Z" fill="#3ab5d1" opacity="0.9"/><line x1="16" y1="10" x2="16" y2="21" stroke="#fafcff" stroke-width="1.2" stroke-linecap="round"/><path d="M16 10.5 L22 19.5 L16 20.5 Z" fill="#fafcff" opacity="0.92"/><path d="M16 13 L11 20 L16 20.5 Z" fill="rgba(250,252,255,0.55)"/><path d="M8 22.5 Q12 21.8 16 22.5 Q20 23.2 24 22.5" stroke="#3ab5d1" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.5"/><circle cx="21" cy="11" r="1.2" fill="rgba(58,181,209,0.35)"/></svg></div>
+    <span class="logo-type"><b>Sail</b>Snap</span>
   </a>
   <div class="nav-right">
     <span class="gps-pill"><span class="gps-dot"></span>GPS Live</span>
@@ -150,11 +150,11 @@ footer{background-color:#070d19;border-top:1px solid rgba(58,181,209,0.1);paddin
 
 <footer>
   <div class="footer-bot">
-    <div class="footer-copy">© 2025 <b>Broadside</b> · Long Island Sound & Beyond</div>
+    <div class="footer-copy">© 2025 <b>SailSnap</b> · Long Island Sound & Beyond</div>
     <div class="footer-legal">
       <a href="pages/about.html">About</a>
       <a href="pages/privacy.html">Privacy</a>
-      <a href="broadside.html">Home</a>
+      <a href="index.html">Home</a>
     </div>
   </div>
 </footer>
